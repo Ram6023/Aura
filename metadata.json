@@ -1,0 +1,7 @@
+{
+  "name": "AURA Web Interface",
+  "description": "A fully functional, voice-activated AI assistant capable of system emulation, general knowledge, and conversational interaction using the Gemini API.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
