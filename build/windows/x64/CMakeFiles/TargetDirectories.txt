@@ -1,0 +1,10 @@
+R:/p/Aura/build/windows/x64/CMakeFiles/INSTALL.dir
+R:/p/Aura/build/windows/x64/CMakeFiles/ALL_BUILD.dir
+R:/p/Aura/build/windows/x64/CMakeFiles/ZERO_CHECK.dir
+R:/p/Aura/build/windows/x64/flutter/CMakeFiles/flutter_wrapper_plugin.dir
+R:/p/Aura/build/windows/x64/flutter/CMakeFiles/flutter_wrapper_app.dir
+R:/p/Aura/build/windows/x64/flutter/CMakeFiles/flutter_assemble.dir
+R:/p/Aura/build/windows/x64/flutter/CMakeFiles/INSTALL.dir
+R:/p/Aura/build/windows/x64/runner/CMakeFiles/aura.dir
+R:/p/Aura/build/windows/x64/runner/CMakeFiles/INSTALL.dir
+R:/p/Aura/build/windows/x64/runner/CMakeFiles/ALL_BUILD.dir
