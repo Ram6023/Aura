@@ -156,7 +156,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="R:\p\Aura\build\windows\x64\runner\ALL_BUILD.vcxproj">
+    <ProjectReference Include="R:\p\Aura\build\windows\x64\plugins\window_manager\ALL_BUILD.vcxproj">
       <Project>{7D2B0BD8-71AF-35C6-B3A4-59F4A4DEC0D9}</Project>
       <Name>ALL_BUILD</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

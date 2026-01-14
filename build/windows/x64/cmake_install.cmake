@@ -42,6 +42,31 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("R:/p/Aura/build/windows/x64/runner/cmake_install.cmake")
 endif()
 
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("R:/p/Aura/build/windows/x64/plugins/battery_plus/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("R:/p/Aura/build/windows/x64/plugins/connectivity_plus/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("R:/p/Aura/build/windows/x64/plugins/screen_retriever_windows/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("R:/p/Aura/build/windows/x64/plugins/speech_to_text_windows/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("R:/p/Aura/build/windows/x64/plugins/window_manager/cmake_install.cmake")
+endif()
+
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
   if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
     list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
@@ -141,6 +166,58 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
       message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
     file(INSTALL DESTINATION "R:/p/Aura/build/windows/x64/runner/Release" TYPE FILE FILES "R:/p/Aura/windows/flutter/ephemeral/flutter_windows.dll")
+  endif()
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
+    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+     "R:/p/Aura/build/windows/x64/runner/Debug/battery_plus_plugin.dll;R:/p/Aura/build/windows/x64/runner/Debug/connectivity_plus_plugin.dll;R:/p/Aura/build/windows/x64/runner/Debug/screen_retriever_windows_plugin.dll;R:/p/Aura/build/windows/x64/runner/Debug/speech_to_text_windows_plugin.dll;R:/p/Aura/build/windows/x64/runner/Debug/window_manager_plugin.dll")
+    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    file(INSTALL DESTINATION "R:/p/Aura/build/windows/x64/runner/Debug" TYPE FILE FILES
+      "R:/p/Aura/build/windows/x64/plugins/battery_plus/Debug/battery_plus_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/connectivity_plus/Debug/connectivity_plus_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/screen_retriever_windows/Debug/screen_retriever_windows_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/speech_to_text_windows/Debug/speech_to_text_windows_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/window_manager/Debug/window_manager_plugin.dll"
+      )
+  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Pp][Rr][Oo][Ff][Ii][Ll][Ee])$")
+    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+     "R:/p/Aura/build/windows/x64/runner/Profile/battery_plus_plugin.dll;R:/p/Aura/build/windows/x64/runner/Profile/connectivity_plus_plugin.dll;R:/p/Aura/build/windows/x64/runner/Profile/screen_retriever_windows_plugin.dll;R:/p/Aura/build/windows/x64/runner/Profile/speech_to_text_windows_plugin.dll;R:/p/Aura/build/windows/x64/runner/Profile/window_manager_plugin.dll")
+    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    file(INSTALL DESTINATION "R:/p/Aura/build/windows/x64/runner/Profile" TYPE FILE FILES
+      "R:/p/Aura/build/windows/x64/plugins/battery_plus/Profile/battery_plus_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/connectivity_plus/Profile/connectivity_plus_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/screen_retriever_windows/Profile/screen_retriever_windows_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/speech_to_text_windows/Profile/speech_to_text_windows_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/window_manager/Profile/window_manager_plugin.dll"
+      )
+  elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
+    list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+     "R:/p/Aura/build/windows/x64/runner/Release/battery_plus_plugin.dll;R:/p/Aura/build/windows/x64/runner/Release/connectivity_plus_plugin.dll;R:/p/Aura/build/windows/x64/runner/Release/screen_retriever_windows_plugin.dll;R:/p/Aura/build/windows/x64/runner/Release/speech_to_text_windows_plugin.dll;R:/p/Aura/build/windows/x64/runner/Release/window_manager_plugin.dll")
+    if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+      message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+    endif()
+    file(INSTALL DESTINATION "R:/p/Aura/build/windows/x64/runner/Release" TYPE FILE FILES
+      "R:/p/Aura/build/windows/x64/plugins/battery_plus/Release/battery_plus_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/connectivity_plus/Release/connectivity_plus_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/screen_retriever_windows/Release/screen_retriever_windows_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/speech_to_text_windows/Release/speech_to_text_windows_plugin.dll"
+      "R:/p/Aura/build/windows/x64/plugins/window_manager/Release/window_manager_plugin.dll"
+      )
   endif()
 endif()
 

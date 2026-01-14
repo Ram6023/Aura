@@ -8,6 +8,21 @@
       <FullPath>R:\p\Aura\build\windows\x64\flutter\x64\Debug\flutter_assemble</FullPath>
     </ProjectOutput>
     <ProjectOutput>
+      <FullPath>R:\p\Aura\build\windows\x64\plugins\battery_plus\Debug\battery_plus_plugin.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>R:\p\Aura\build\windows\x64\plugins\connectivity_plus\Debug\connectivity_plus_plugin.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>R:\p\Aura\build\windows\x64\plugins\screen_retriever_windows\Debug\screen_retriever_windows_plugin.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>R:\p\Aura\build\windows\x64\plugins\speech_to_text_windows\Debug\speech_to_text_windows_plugin.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>R:\p\Aura\build\windows\x64\plugins\window_manager\Debug\window_manager_plugin.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
       <FullPath>R:\p\Aura\build\windows\x64\runner\Debug\aura.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>

@@ -1,5 +1,10 @@
 R:/p/Aura/build/windows/x64/runner/Debug/data/icudtl.dat
 R:/p/Aura/build/windows/x64/runner/Debug/flutter_windows.dll
+R:/p/Aura/build/windows/x64/runner/Debug/battery_plus_plugin.dll
+R:/p/Aura/build/windows/x64/runner/Debug/connectivity_plus_plugin.dll
+R:/p/Aura/build/windows/x64/runner/Debug/screen_retriever_windows_plugin.dll
+R:/p/Aura/build/windows/x64/runner/Debug/speech_to_text_windows_plugin.dll
+R:/p/Aura/build/windows/x64/runner/Debug/window_manager_plugin.dll
 R:/p/Aura/build/windows/x64/runner/Debug/data/flutter_assets/AssetManifest.bin
 R:/p/Aura/build/windows/x64/runner/Debug/data/flutter_assets/FontManifest.json
 R:/p/Aura/build/windows/x64/runner/Debug/data/flutter_assets/fonts/MaterialIcons-Regular.otf
