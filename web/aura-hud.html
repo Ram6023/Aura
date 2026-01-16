@@ -313,10 +313,11 @@
             z-index: 10;
             flex: 1;
             display: grid;
-            grid-template-columns: 1fr 1.2fr 380px;
+            grid-template-columns: 0.8fr 1.4fr 380px;
             gap: 0;
-            padding: 0 48px 0 48px;
-            overflow: hidden;
+            padding: 0 48px;
+            min-height: 0;
+            /* Important for flex child */
         }
 
         /* Left Column – Empty / Ambient Space */
@@ -348,11 +349,12 @@
         /* Arc Reactor Orb Container */
         .orb-system {
             position: relative;
-            width: 380px;
-            height: 380px;
+            width: 340px;
+            height: 340px;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         /* Orbital Rings */
@@ -590,8 +592,9 @@
 
         /* Orb State Text */
         .orb-text {
-            margin-top: 48px;
+            margin-top: 32px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .orb-state {
@@ -808,8 +811,9 @@
             align-items: center;
             justify-content: center;
             gap: 24px;
-            height: 100px;
+            height: 80px;
             padding: 0 48px;
+            flex-shrink: 0;
         }
 
         .control-btn {
