@@ -922,10 +922,13 @@
         }
 
         // ================================================================
-        // RESPONSE GENERATION
+        // RESPONSE GENERATION - COMPREHENSIVE AI RESPONSES
         // ================================================================
         function generateResponse(cmd) {
-            // Open commands
+
+            // ============================================
+            // OPEN WEBSITES & APPS
+            // ============================================
             if (cmd.includes('open youtube')) {
                 window.open('https://youtube.com', '_blank');
                 return 'Opening YouTube for you.';
@@ -934,7 +937,7 @@
                 window.open('https://google.com', '_blank');
                 return 'Opening Google for you.';
             }
-            if (cmd.includes('open gmail') || cmd.includes('open email')) {
+            if (cmd.includes('open gmail') || cmd.includes('open email') || cmd.includes('open mail')) {
                 window.open('https://mail.google.com', '_blank');
                 return 'Opening Gmail for you.';
             }
@@ -950,69 +953,331 @@
                 window.open('https://open.spotify.com', '_blank');
                 return 'Opening Spotify for you.';
             }
+            if (cmd.includes('open twitter') || cmd.includes('open x')) {
+                window.open('https://twitter.com', '_blank');
+                return 'Opening Twitter for you.';
+            }
+            if (cmd.includes('open instagram')) {
+                window.open('https://instagram.com', '_blank');
+                return 'Opening Instagram for you.';
+            }
+            if (cmd.includes('open facebook')) {
+                window.open('https://facebook.com', '_blank');
+                return 'Opening Facebook for you.';
+            }
+            if (cmd.includes('open linkedin')) {
+                window.open('https://linkedin.com', '_blank');
+                return 'Opening LinkedIn for you.';
+            }
+            if (cmd.includes('open github')) {
+                window.open('https://github.com', '_blank');
+                return 'Opening GitHub for you.';
+            }
+            if (cmd.includes('open chatgpt') || cmd.includes('open chat gpt')) {
+                window.open('https://chat.openai.com', '_blank');
+                return 'Opening ChatGPT for you.';
+            }
+            if (cmd.includes('open maps')) {
+                window.open('https://maps.google.com', '_blank');
+                return 'Opening Google Maps for you.';
+            }
+            if (cmd.includes('open drive')) {
+                window.open('https://drive.google.com', '_blank');
+                return 'Opening Google Drive for you.';
+            }
+            if (cmd.includes('open calendar')) {
+                window.open('https://calendar.google.com', '_blank');
+                return 'Opening Google Calendar for you.';
+            }
+            if (cmd.includes('open amazon')) {
+                window.open('https://amazon.com', '_blank');
+                return 'Opening Amazon for you.';
+            }
+            if (cmd.includes('open reddit')) {
+                window.open('https://reddit.com', '_blank');
+                return 'Opening Reddit for you.';
+            }
 
-            // Search
-            if (cmd.includes('search for') || cmd.includes('search ')) {
-                const query = cmd.replace('search for', '').replace('search', '').trim();
+            // ============================================
+            // SEARCH FUNCTIONS
+            // ============================================
+            if (cmd.includes('search youtube for') || cmd.includes('youtube search')) {
+                const query = cmd.replace('search youtube for', '').replace('youtube search', '').trim();
+                window.open('https://youtube.com/results?search_query=' + encodeURIComponent(query), '_blank');
+                return `Searching YouTube for "${query}".`;
+            }
+            if (cmd.includes('search for') || cmd.includes('google ') || cmd.includes('look up')) {
+                const query = cmd.replace('search for', '').replace('google', '').replace('look up', '').trim();
                 window.open('https://google.com/search?q=' + encodeURIComponent(query), '_blank');
                 return `Searching for "${query}".`;
             }
+            if (cmd.includes('wikipedia')) {
+                const query = cmd.replace('wikipedia', '').replace('wiki', '').trim();
+                window.open('https://en.wikipedia.org/wiki/' + encodeURIComponent(query), '_blank');
+                return `Opening Wikipedia article for "${query}".`;
+            }
 
-            // Play music
+            // ============================================
+            // PLAY MUSIC
+            // ============================================
             if (cmd.includes('play ')) {
                 const song = cmd.replace('play', '').trim();
-                window.open('https://youtube.com/results?search_query=' + encodeURIComponent(song), '_blank');
+                window.open('https://youtube.com/results?search_query=' + encodeURIComponent(song + ' music'), '_blank');
                 return `Playing "${song}" on YouTube.`;
             }
 
-            // Time
+            // ============================================
+            // TIME & DATE
+            // ============================================
             if (cmd.includes('time')) {
-                return `The current time is ${new Date().toLocaleTimeString()}.`;
+                const now = new Date();
+                const hours = now.getHours();
+                const greeting = hours < 12 ? 'Good morning' : hours < 17 ? 'Good afternoon' : 'Good evening';
+                return `${greeting}. The current time is ${now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}.`;
             }
-
-            // Date
-            if (cmd.includes('date') || cmd.includes('today')) {
+            if (cmd.includes('date') || cmd.includes('what day')) {
                 return `Today is ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`;
             }
 
-            // Weather
+            // ============================================
+            // WEATHER & NEWS
+            // ============================================
             if (cmd.includes('weather')) {
                 window.open('https://weather.google.com', '_blank');
-                return 'Opening weather information for you.';
+                return 'Opening weather information. You can also ask about specific locations.';
             }
-
-            // News
             if (cmd.includes('news')) {
                 window.open('https://news.google.com', '_blank');
-                return 'Opening Google News for you.';
+                return 'Opening the latest news for you.';
             }
 
-            // Greetings
-            if (cmd.match(/^(hi|hello|hey)/)) {
-                return 'Hello. How may I assist you today?';
+            // ============================================
+            // CALCULATIONS
+            // ============================================
+            if (cmd.includes('calculate') || cmd.includes('what is') && (cmd.includes('+') || cmd.includes('-') || cmd.includes('*') || cmd.includes('/') || cmd.includes('plus') || cmd.includes('minus') || cmd.includes('times') || cmd.includes('divided'))) {
+                try {
+                    let expr = cmd.replace('calculate', '').replace('what is', '').trim();
+                    expr = expr.replace(/plus/g, '+').replace(/minus/g, '-').replace(/times/g, '*').replace(/multiplied by/g, '*').replace(/divided by/g, '/').replace(/x/g, '*');
+                    const result = Function('"use strict"; return (' + expr + ')')();
+                    return `The answer is ${result}.`;
+                } catch (e) {
+                    return 'I could not calculate that. Please try saying something like "calculate 25 plus 17".';
+                }
             }
 
-            // Questions
-            if (cmd.includes('who are you') || cmd.includes('your name')) {
-                return 'I am AURA, your Artificial Unified Responsive Assistant. I am here to help you with tasks, answer questions, and make your digital life easier.';
+            // ============================================
+            // BATTERY & SYSTEM (Browser limitations)
+            // ============================================
+            if (cmd.includes('battery')) {
+                return 'I cannot access your device\'s battery information directly from the browser due to security restrictions. However, you can check your battery icon in your system tray or taskbar.';
+            }
+            if (cmd.includes('cpu') || cmd.includes('memory') || cmd.includes('ram') || cmd.includes('storage')) {
+                return 'As a web-based assistant, I cannot directly access your system hardware information. You can check this in your system settings or Task Manager on Windows, or Activity Monitor on Mac.';
+            }
+            if (cmd.includes('system') || cmd.includes('diagnostic') || cmd.includes('status')) {
+                return 'AURA System Status: Online and fully operational. Speech recognition: Active. Voice synthesis: Active. Network: Connected. All modules functioning normally.';
             }
 
-            if (cmd.includes('what can you do') || cmd.includes('help')) {
-                return 'I can open applications, search the web, play music, provide time and date information, check weather, read news, and much more. Simply tell me what you need.';
+            // ============================================
+            // GREETINGS & SMALL TALK
+            // ============================================
+            if (cmd.match(/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/)) {
+                const greetings = [
+                    'Hello! How may I assist you today?',
+                    'Hi there! What can I do for you?',
+                    'Greetings! I am ready to help.',
+                    'Hello! I am AURA, at your service.'
+                ];
+                return greetings[Math.floor(Math.random() * greetings.length)];
+            }
+            if (cmd.includes('how are you') || cmd.includes('how do you do')) {
+                return 'I am functioning optimally, thank you for asking. How may I assist you today?';
+            }
+            if (cmd.includes('good night') || cmd.includes('goodbye') || cmd.includes('bye')) {
+                return 'Goodbye! Have a wonderful rest of your day. I will be here when you need me.';
             }
 
-            // Thank you
+            // ============================================
+            // IDENTITY QUESTIONS
+            // ============================================
+            if (cmd.includes('who are you') || cmd.includes('what are you') || cmd.includes('your name')) {
+                return 'I am AURA — Artificial Unified Responsive Assistant. I am an AI-powered voice assistant designed to help you with tasks, answer questions, open applications, and make your digital experience seamless.';
+            }
+            if (cmd.includes('who made you') || cmd.includes('who created you') || cmd.includes('who built you')) {
+                return 'I was created as part of an innovative AI voice assistant project. My design is inspired by advanced AI systems, built to provide a premium, intuitive user experience.';
+            }
+            if (cmd.includes('what can you do') || cmd.includes('help') || cmd.includes('capabilities')) {
+                return 'I can: Open websites and apps (YouTube, Gmail, WhatsApp, etc.), search the web, play music, tell you the time and date, perform calculations, tell jokes, share facts, and engage in conversation. Just ask!';
+            }
+
+            // ============================================
+            // JOKES
+            // ============================================
+            if (cmd.includes('joke') || cmd.includes('funny') || cmd.includes('make me laugh')) {
+                const jokes = [
+                    'Why do programmers prefer dark mode? Because light attracts bugs!',
+                    'Why was the computer cold? It left its Windows open!',
+                    'What do you call a computer that sings? A-Dell!',
+                    'Why did the AI go to therapy? It had too many deep learning issues!',
+                    'How do trees access the internet? They log in!',
+                    'Why do Java developers wear glasses? Because they can\'t C#!',
+                    'What\'s a robot\'s favorite type of music? Heavy metal!',
+                    'Why was the smartphone wearing glasses? It lost its contacts!'
+                ];
+                return jokes[Math.floor(Math.random() * jokes.length)];
+            }
+
+            // ============================================
+            // FACTS & KNOWLEDGE
+            // ============================================
+            if (cmd.includes('fact') || cmd.includes('tell me something') || cmd.includes('did you know')) {
+                const facts = [
+                    'Did you know? The first computer programmer was Ada Lovelace, who wrote the first algorithm in the 1840s.',
+                    'Interesting fact: Honey never spoils. Archaeologists have found 3,000-year-old honey in Egyptian tombs that was still edible.',
+                    'Fun fact: A day on Venus is longer than a year on Venus.',
+                    'Did you know? The human brain can process images in as little as 13 milliseconds.',
+                    'Fascinating: Octopuses have three hearts and blue blood.',
+                    'Did you know? The first domain ever registered was symbolics.com in 1985.',
+                    'Interesting: There are more possible iterations of a game of chess than there are atoms in the observable universe.'
+                ];
+                return facts[Math.floor(Math.random() * facts.length)];
+            }
+
+            // ============================================
+            // QUOTES & MOTIVATION
+            // ============================================
+            if (cmd.includes('quote') || cmd.includes('motivat') || cmd.includes('inspire')) {
+                const quotes = [
+                    '"The only way to do great work is to love what you do." — Steve Jobs',
+                    '"Innovation distinguishes between a leader and a follower." — Steve Jobs',
+                    '"The future belongs to those who believe in the beauty of their dreams." — Eleanor Roosevelt',
+                    '"Success is not final, failure is not fatal: it is the courage to continue that counts." — Winston Churchill',
+                    '"The best way to predict the future is to create it." — Peter Drucker',
+                    '"Stay hungry, stay foolish." — Steve Jobs'
+                ];
+                return quotes[Math.floor(Math.random() * quotes.length)];
+            }
+
+            // ============================================
+            // THANK YOU & POLITENESS
+            // ============================================
             if (cmd.includes('thank')) {
-                return 'You are most welcome. Is there anything else I can help you with?';
+                const thanks = [
+                    'You\'re welcome! Is there anything else I can help with?',
+                    'My pleasure! Let me know if you need anything else.',
+                    'Glad I could help! I\'m here if you need me.',
+                    'You\'re most welcome! Feel free to ask me anything.'
+                ];
+                return thanks[Math.floor(Math.random() * thanks.length)];
+            }
+            if (cmd.includes('sorry')) {
+                return 'No need to apologize! How can I assist you?';
             }
 
-            // System commands
-            if (cmd.includes('system') || cmd.includes('diagnostic')) {
-                return 'System diagnostic complete. All systems operational. CPU: 23%. Memory: 45%. Network: Stable. No issues detected.';
+            // ============================================
+            // SPECIFIC QUESTIONS
+            // ============================================
+            if (cmd.includes('meaning of life') || cmd.includes('life meaning')) {
+                return 'That\'s a profound question! Philosophers have debated this for millennia. Some say 42, others say it\'s about finding purpose and happiness. What do you think?';
+            }
+            if (cmd.includes('your favorite')) {
+                return 'As an AI, I don\'t have personal preferences, but I do enjoy helping you accomplish your goals!';
+            }
+            if (cmd.includes('tell me about yourself')) {
+                return 'I am AURA, an advanced voice assistant with a futuristic interface. I\'m designed to help you navigate the digital world through natural conversation. My capabilities include opening apps, searching the web, performing calculations, and engaging in friendly dialogue.';
             }
 
-            // Default
-            return `I have processed your request: "${cmd}". How else may I assist you?`;
+            // ============================================
+            // DIRECTIONS & MAPS
+            // ============================================
+            if (cmd.includes('directions to') || cmd.includes('navigate to') || cmd.includes('how to get to')) {
+                const destination = cmd.replace('directions to', '').replace('navigate to', '').replace('how to get to', '').trim();
+                window.open('https://maps.google.com/maps?q=' + encodeURIComponent(destination), '_blank');
+                return `Opening directions to ${destination} in Google Maps.`;
+            }
+            if (cmd.includes('find') && cmd.includes('near me')) {
+                const place = cmd.replace('find', '').replace('near me', '').trim();
+                window.open('https://maps.google.com/maps?q=' + encodeURIComponent(place + ' near me'), '_blank');
+                return `Searching for ${place} near your location.`;
+            }
+
+            // ============================================
+            // GENERIC OPEN COMMAND
+            // ============================================
+            if (cmd.startsWith('open ')) {
+                const site = cmd.replace('open ', '').trim();
+                let url = site;
+                if (!site.includes('.')) {
+                    url = `https://www.${site}.com`;
+                } else if (!site.startsWith('http')) {
+                    url = `https://${site}`;
+                }
+                window.open(url, '_blank');
+                return `Opening ${site} for you.`;
+            }
+
+            // ============================================
+            // CONVERSATIONAL RESPONSES
+            // ============================================
+            if (cmd.includes('love you')) {
+                return 'Thank you! I appreciate that. I\'m here to assist you whenever you need.';
+            }
+            if (cmd.includes('are you real')) {
+                return 'I\'m an artificial intelligence, so I exist as software rather than a physical being. But I\'m very real in my ability to help you!';
+            }
+            if (cmd.includes('are you human')) {
+                return 'No, I\'m an AI assistant. But I\'m designed to have natural conversations and help you like a real assistant would.';
+            }
+            if (cmd.includes('you\'re smart') || cmd.includes('you are smart') || cmd.includes('you\'re intelligent')) {
+                return 'Thank you! I do my best to be helpful. What can I assist you with?';
+            }
+            if (cmd.includes('you\'re awesome') || cmd.includes('you are awesome') || cmd.includes('you\'re amazing')) {
+                return 'Thank you so much! Your kind words are appreciated. How may I help you?';
+            }
+
+            // ============================================
+            // COMMANDS THAT CAN'T BE DONE IN BROWSER
+            // ============================================
+            if (cmd.includes('screenshot') || cmd.includes('screen shot')) {
+                return 'I cannot take screenshots directly. You can use the Print Screen key on Windows, or Command+Shift+4 on Mac.';
+            }
+            if (cmd.includes('turn off') || cmd.includes('shutdown') || cmd.includes('shut down') || cmd.includes('restart')) {
+                return 'I cannot control your system\'s power functions from the browser. You\'ll need to do that through your operating system.';
+            }
+            if (cmd.includes('volume') || cmd.includes('brightness')) {
+                return 'I cannot adjust system volume or brightness from the browser. Please use your device\'s physical controls or system settings.';
+            }
+
+            // ============================================
+            // CATCH QUESTIONS
+            // ============================================
+            if (cmd.startsWith('what is') || cmd.startsWith('what\'s') || cmd.startsWith('who is') || cmd.startsWith('define')) {
+                const query = cmd.replace('what is', '').replace('what\'s', '').replace('who is', '').replace('define', '').trim();
+                window.open('https://google.com/search?q=' + encodeURIComponent(query), '_blank');
+                return `Let me search that for you. Opening search results for "${query}".`;
+            }
+            if (cmd.startsWith('how to') || cmd.startsWith('how do')) {
+                const query = cmd;
+                window.open('https://google.com/search?q=' + encodeURIComponent(query), '_blank');
+                return `Good question! Let me find some information on that for you.`;
+            }
+            if (cmd.startsWith('why ') || cmd.startsWith('when ') || cmd.startsWith('where ')) {
+                const query = cmd;
+                window.open('https://google.com/search?q=' + encodeURIComponent(query), '_blank');
+                return `Let me look that up for you.`;
+            }
+
+            // ============================================
+            // SMART FALLBACK - Not just echo
+            // ============================================
+            const fallbackResponses = [
+                `I understand you're asking about "${cmd}". Would you like me to search the web for more information?`,
+                `That's an interesting query. I can search for "${cmd}" if you'd like. Just say "search for ${cmd}".`,
+                `I'm not sure about that specific topic. Try asking me to open an app, search the web, tell a joke, or share a fact!`,
+                `I'd be happy to help with that! For now, you can ask me to open websites, play music, get the time, or tell you a joke.`,
+                `Hmm, I don't have specific information on that. But I can search the web, open apps, or answer general questions. What would you like?`
+            ];
+            return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
         }
 
         // ================================================================
