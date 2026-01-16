@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AURA - Advanced User Responsive AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -53,7 +56,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
@@ -61,8 +64,13 @@
         }
 
         @keyframes gridMove {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(50px); }
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(50px);
+            }
         }
 
         /* Floating Particles */
@@ -87,10 +95,25 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 0.5; }
-            90% { opacity: 0.5; }
-            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+
+            0%,
+            100% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.5;
+            }
+
+            90% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(-100vh) scale(1);
+                opacity: 0;
+            }
         }
 
         /* Main Container */
@@ -191,8 +214,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
         }
 
         /* Central Orb */
@@ -218,7 +248,7 @@
             height: 180px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            box-shadow: 
+            box-shadow:
                 0 0 60px rgba(99, 102, 241, 0.5),
                 0 0 120px rgba(139, 92, 246, 0.3),
                 inset 0 0 60px rgba(255, 255, 255, 0.1);
@@ -236,21 +266,43 @@
             left: 10%;
             width: 30%;
             height: 30%;
-            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
             border-radius: 50%;
         }
 
         .orb.listening {
             background: linear-gradient(135deg, var(--tertiary), var(--primary));
-            box-shadow: 
+            box-shadow:
                 0 0 80px rgba(6, 182, 212, 0.6),
                 0 0 150px rgba(99, 102, 241, 0.4);
             animation: orbListening 0.5s ease-in-out infinite;
         }
 
+        .orb.waiting {
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            box-shadow:
+                0 0 60px rgba(244, 114, 182, 0.4),
+                0 0 120px rgba(139, 92, 246, 0.3);
+            animation: orbWaiting 2s ease-in-out infinite;
+        }
+
+        @keyframes orbWaiting {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.03);
+                opacity: 1;
+            }
+        }
+
         .orb.processing {
             background: linear-gradient(135deg, var(--warning), var(--accent));
-            box-shadow: 
+            box-shadow:
                 0 0 80px rgba(245, 158, 11, 0.6),
                 0 0 150px rgba(244, 114, 182, 0.4);
             animation: orbProcessing 0.3s ease-in-out infinite;
@@ -258,7 +310,7 @@
 
         .orb.speaking {
             background: linear-gradient(135deg, var(--success), var(--tertiary));
-            box-shadow: 
+            box-shadow:
                 0 0 80px rgba(16, 185, 129, 0.6),
                 0 0 150px rgba(6, 182, 212, 0.4);
             animation: orbSpeaking 0.8s ease-in-out infinite;
@@ -266,30 +318,61 @@
 
         .orb.error {
             background: linear-gradient(135deg, var(--error), var(--warning));
-            box-shadow: 
+            box-shadow:
                 0 0 80px rgba(239, 68, 68, 0.6),
                 0 0 150px rgba(245, 158, 11, 0.4);
         }
 
         @keyframes orbPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         @keyframes orbListening {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
         }
 
         @keyframes orbProcessing {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.08) rotate(2deg); }
+
+            0%,
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            50% {
+                transform: scale(1.08) rotate(2deg);
+            }
         }
 
         @keyframes orbSpeaking {
-            0%, 100% { transform: scale(1); }
-            25% { transform: scale(1.06); }
-            75% { transform: scale(0.98); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            25% {
+                transform: scale(1.06);
+            }
+
+            75% {
+                transform: scale(0.98);
+            }
         }
 
         /* Rotating Rings */
@@ -332,13 +415,26 @@
             transform: translateX(-50%);
         }
 
-        .ring-1::before { background: var(--primary); }
-        .ring-2::before { background: var(--secondary); }
-        .ring-3::before { background: var(--tertiary); }
+        .ring-1::before {
+            background: var(--primary);
+        }
+
+        .ring-2::before {
+            background: var(--secondary);
+        }
+
+        .ring-3::before {
+            background: var(--tertiary);
+        }
 
         @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Status Text */
@@ -356,10 +452,25 @@
             transition: all 0.3s ease;
         }
 
-        .status-text.listening { color: var(--tertiary); }
-        .status-text.processing { color: var(--warning); }
-        .status-text.speaking { color: var(--success); }
-        .status-text.error { color: var(--error); }
+        .status-text.listening {
+            color: var(--tertiary);
+        }
+
+        .status-text.processing {
+            color: var(--warning);
+        }
+
+        .status-text.speaking {
+            color: var(--success);
+        }
+
+        .status-text.error {
+            color: var(--error);
+        }
+
+        .status-text.waiting {
+            color: var(--accent);
+        }
 
         /* Transcript Display */
         .transcript-container {
@@ -441,8 +552,15 @@
         }
 
         @keyframes buttonPulse {
-            0%, 100% { box-shadow: 0 10px 40px rgba(239, 68, 68, 0.4); }
-            50% { box-shadow: 0 15px 60px rgba(239, 68, 68, 0.6); }
+
+            0%,
+            100% {
+                box-shadow: 0 10px 40px rgba(239, 68, 68, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 15px 60px rgba(239, 68, 68, 0.6);
+            }
         }
 
         .voice-button svg {
@@ -497,8 +615,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(10px); }
-            to { opacity: 1; transform: translateX(0); }
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         /* Instructions */
@@ -526,19 +651,22 @@
             .logs-panel {
                 display: none;
             }
+
             .header {
                 padding: 15px 20px;
             }
+
             .status-badges {
                 display: none;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Background -->
     <div class="background"></div>
-    
+
     <!-- Particles -->
     <div class="particles" id="particles"></div>
 
@@ -577,7 +705,7 @@
             <!-- Status Section -->
             <div class="status-section">
                 <div class="status-text" id="statusText">STANDBY</div>
-                
+
                 <!-- Transcript -->
                 <div class="transcript-container" id="transcriptContainer">
                     <div class="transcript" id="transcript"></div>
@@ -591,7 +719,8 @@
                 <!-- Voice Button -->
                 <button class="voice-button" id="voiceButton" onclick="toggleListening()">
                     <svg viewBox="0 0 24 24">
-                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        <path
+                            d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
                     </svg>
                 </button>
             </div>
@@ -606,15 +735,22 @@
 
     <!-- Instructions -->
     <div class="instructions">
-        Click the <kbd>ORB</kbd> or <kbd>MIC</kbd> button to speak • Press <kbd>SPACE</kbd> to toggle
+        Say <kbd>HEY AURA</kbd> to wake me up • Or click the <kbd>ORB</kbd> / <kbd>MIC</kbd> button • Press
+        <kbd>SPACE</kbd> to toggle
     </div>
 
     <script>
         // State Management
         let isListening = false;
+        let isWakeWordListening = false;
+        let wakeWordRecognition = null;
         let recognition = null;
         let synthesis = window.speechSynthesis;
         let currentState = 'standby';
+        let awaitingCommand = false;
+
+        // Wake word configuration
+        const WAKE_WORDS = ['hey aura', 'hey ora', 'hey aara', 'a aura', 'hey sura', 'hey aurora', 'aura'];
 
         // DOM Elements
         const orb = document.getElementById('orb');
@@ -631,12 +767,17 @@
         function init() {
             createParticles();
             initSpeechRecognition();
+            initWakeWordDetection();
             addLog('AURA_BOOT_SEQUENCE_INITIATED');
             setTimeout(() => addLog('LOADING_NEURAL_MODULES...'), 400);
             setTimeout(() => addLog('SPEECH_ENGINE_INITIALIZED'), 800);
             setTimeout(() => addLog('VOICE_SYNTHESIS_READY'), 1200);
-            setTimeout(() => addLog('SYSTEM_READY'), 1600);
-            
+            setTimeout(() => addLog('WAKE_WORD_DETECTION_ACTIVE'), 1600);
+            setTimeout(() => {
+                addLog('SYSTEM_READY - Say "Hey Aura" to wake me');
+                startWakeWordListening();
+            }, 2000);
+
             // Keyboard shortcut
             document.addEventListener('keydown', (e) => {
                 if (e.code === 'Space' && e.target === document.body) {
@@ -658,6 +799,92 @@
             }
         }
 
+        // Initialize Wake Word Detection
+        function initWakeWordDetection() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                wakeWordRecognition = new SpeechRecognition();
+                wakeWordRecognition.continuous = true;
+                wakeWordRecognition.interimResults = true;
+                wakeWordRecognition.lang = 'en-US';
+
+                wakeWordRecognition.onresult = (event) => {
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript.toLowerCase().trim();
+
+                        // Check for wake word
+                        const wakeWordDetected = WAKE_WORDS.some(word => transcript.includes(word));
+
+                        if (wakeWordDetected && !awaitingCommand) {
+                            addLog('WAKE_WORD_DETECTED: "' + transcript + '"');
+                            handleWakeWord();
+                            return;
+                        }
+                    }
+                };
+
+                wakeWordRecognition.onerror = (event) => {
+                    if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                        addLog('WAKE_WORD_ERROR: ' + event.error);
+                    }
+                    // Restart wake word listening after error
+                    if (isWakeWordListening && !awaitingCommand && !isListening) {
+                        setTimeout(() => startWakeWordListening(), 1000);
+                    }
+                };
+
+                wakeWordRecognition.onend = () => {
+                    // Restart wake word listening if it ended unexpectedly
+                    if (isWakeWordListening && !awaitingCommand && !isListening) {
+                        setTimeout(() => startWakeWordListening(), 500);
+                    }
+                };
+            }
+        }
+
+        // Start Wake Word Listening
+        function startWakeWordListening() {
+            if (!wakeWordRecognition || awaitingCommand || isListening) return;
+
+            try {
+                isWakeWordListening = true;
+                setState('waiting');
+                wakeWordRecognition.start();
+            } catch (e) {
+                // Already started, ignore
+            }
+        }
+
+        // Stop Wake Word Listening
+        function stopWakeWordListening() {
+            isWakeWordListening = false;
+            if (wakeWordRecognition) {
+                try {
+                    wakeWordRecognition.stop();
+                } catch (e) { }
+            }
+        }
+
+        // Handle Wake Word Detection
+        function handleWakeWord() {
+            awaitingCommand = true;
+            stopWakeWordListening();
+
+            // Respond and then listen for command
+            setState('speaking');
+            const greeting = "How can I help you today?";
+            response.textContent = greeting;
+            responseContainer.classList.add('visible');
+
+            speak(greeting, () => {
+                responseContainer.classList.remove('visible');
+                // Start listening for the actual command
+                setTimeout(() => {
+                    startListening();
+                }, 300);
+            });
+        }
+
         // Initialize Speech Recognition
         function initSpeechRecognition() {
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -669,7 +896,7 @@
 
                 recognition.onstart = () => {
                     setState('listening');
-                    addLog('LISTENING_STARTED');
+                    addLog('LISTENING_FOR_COMMAND');
                 };
 
                 recognition.onresult = (event) => {
@@ -697,7 +924,11 @@
                 recognition.onerror = (event) => {
                     addLog('SPEECH_ERROR: ' + event.error);
                     if (event.error === 'not-allowed') {
-                        speak('Microphone access was denied. Please enable microphone permissions.');
+                        speak('Microphone access was denied. Please enable microphone permissions.', () => {
+                            resumeWakeWordListening();
+                        });
+                    } else {
+                        resumeWakeWordListening();
                     }
                     stopListening();
                 };
@@ -713,6 +944,15 @@
                 addLog('SPEECH_RECOGNITION_NOT_SUPPORTED');
                 speak('Speech recognition is not supported in this browser. Please use Chrome.');
             }
+        }
+
+        // Resume Wake Word Listening
+        function resumeWakeWordListening() {
+            awaitingCommand = false;
+            setTimeout(() => {
+                startWakeWordListening();
+                addLog('WAKE_WORD_LISTENING_RESUMED');
+            }, 1000);
         }
 
         // Toggle Listening
@@ -749,13 +989,13 @@
         function stopListening() {
             isListening = false;
             voiceButton.classList.remove('active');
-            
+
             if (recognition) {
                 try {
                     recognition.stop();
-                } catch (e) {}
+                } catch (e) { }
             }
-            
+
             if (currentState === 'listening') {
                 setState('standby');
                 addLog('LISTENING_STOPPED');
@@ -771,31 +1011,367 @@
                 const responseText = generateResponse(command.toLowerCase());
                 setState('speaking');
                 addLog('RESPONSE_GENERATED');
-                
+
                 response.textContent = responseText;
                 responseContainer.classList.add('visible');
-                
+
                 speak(responseText, () => {
                     setTimeout(() => {
-                        setState('standby');
-                        setTimeout(() => {
-                            transcriptContainer.classList.remove('visible');
-                            responseContainer.classList.remove('visible');
-                        }, 5000);
-                    }, 500);
+                        transcriptContainer.classList.remove('visible');
+                        responseContainer.classList.remove('visible');
+                        // Resume wake word listening after response
+                        resumeWakeWordListening();
+                    }, 2000);
                 });
             }, 800);
         }
 
-        // Generate Response
+        // ============================================
+        // TASK EXECUTION SYSTEM
+        // ============================================
+
+        // Notes storage
+        let notes = JSON.parse(localStorage.getItem('aura_notes') || '[]');
+        let reminders = JSON.parse(localStorage.getItem('aura_reminders') || '[]');
+
+        // Save to localStorage
+        function saveNotes() {
+            localStorage.setItem('aura_notes', JSON.stringify(notes));
+        }
+
+        function saveReminders() {
+            localStorage.setItem('aura_reminders', JSON.stringify(reminders));
+        }
+
+        // Open URL in new tab
+        function openURL(url, description) {
+            addLog('OPENING: ' + description);
+            window.open(url, '_blank');
+            return true;
+        }
+
+        // Generate Response and Execute Tasks
         function generateResponse(command) {
-            // Greetings
-            if (command.includes('hello') || command.includes('hi') || command.includes('hey')) {
-                return "Hello! I'm AURA, your advanced AI assistant. How can I help you today?";
+            const cmd = command.toLowerCase().trim();
+
+            // ============================================
+            // OPEN APPS / WEBSITES
+            // ============================================
+
+            // Open Google
+            if (cmd.includes('open google') || cmd === 'google') {
+                openURL('https://www.google.com', 'Google');
+                return "Opening Google for you.";
             }
-            
+
+            // Open YouTube
+            if (cmd.includes('open youtube') || cmd === 'youtube') {
+                openURL('https://www.youtube.com', 'YouTube');
+                return "Opening YouTube for you.";
+            }
+
+            // Open Gmail
+            if (cmd.includes('open gmail') || cmd.includes('open email') || cmd.includes('open mail') || cmd === 'gmail') {
+                openURL('https://mail.google.com', 'Gmail');
+                return "Opening Gmail for you.";
+            }
+
+            // Open Google Drive
+            if (cmd.includes('open drive') || cmd.includes('google drive')) {
+                openURL('https://drive.google.com', 'Google Drive');
+                return "Opening Google Drive for you.";
+            }
+
+            // Open Google Maps
+            if (cmd.includes('open maps') || cmd.includes('google maps')) {
+                openURL('https://maps.google.com', 'Google Maps');
+                return "Opening Google Maps for you.";
+            }
+
+            // Open Google Calendar
+            if (cmd.includes('open calendar') || cmd.includes('google calendar')) {
+                openURL('https://calendar.google.com', 'Google Calendar');
+                return "Opening Google Calendar for you.";
+            }
+
+            // Open Facebook
+            if (cmd.includes('open facebook') || cmd === 'facebook') {
+                openURL('https://www.facebook.com', 'Facebook');
+                return "Opening Facebook for you.";
+            }
+
+            // Open Twitter/X
+            if (cmd.includes('open twitter') || cmd.includes('open x') || cmd === 'twitter') {
+                openURL('https://www.twitter.com', 'Twitter');
+                return "Opening Twitter for you.";
+            }
+
+            // Open Instagram
+            if (cmd.includes('open instagram') || cmd === 'instagram') {
+                openURL('https://www.instagram.com', 'Instagram');
+                return "Opening Instagram for you.";
+            }
+
+            // Open LinkedIn
+            if (cmd.includes('open linkedin') || cmd === 'linkedin') {
+                openURL('https://www.linkedin.com', 'LinkedIn');
+                return "Opening LinkedIn for you.";
+            }
+
+            // Open WhatsApp
+            if (cmd.includes('open whatsapp') || cmd === 'whatsapp') {
+                openURL('https://web.whatsapp.com', 'WhatsApp Web');
+                return "Opening WhatsApp Web for you.";
+            }
+
+            // Open GitHub
+            if (cmd.includes('open github') || cmd === 'github') {
+                openURL('https://www.github.com', 'GitHub');
+                return "Opening GitHub for you.";
+            }
+
+            // Open Netflix
+            if (cmd.includes('open netflix') || cmd === 'netflix') {
+                openURL('https://www.netflix.com', 'Netflix');
+                return "Opening Netflix for you.";
+            }
+
+            // Open Amazon
+            if (cmd.includes('open amazon') || cmd === 'amazon') {
+                openURL('https://www.amazon.com', 'Amazon');
+                return "Opening Amazon for you.";
+            }
+
+            // Open Wikipedia
+            if (cmd.includes('open wikipedia') || cmd === 'wikipedia') {
+                openURL('https://www.wikipedia.org', 'Wikipedia');
+                return "Opening Wikipedia for you.";
+            }
+
+            // Open Reddit
+            if (cmd.includes('open reddit') || cmd === 'reddit') {
+                openURL('https://www.reddit.com', 'Reddit');
+                return "Opening Reddit for you.";
+            }
+
+            // Open Spotify
+            if (cmd.includes('open spotify') || cmd === 'spotify') {
+                openURL('https://open.spotify.com', 'Spotify');
+                return "Opening Spotify for you.";
+            }
+
+            // Open ChatGPT
+            if (cmd.includes('open chatgpt') || cmd.includes('open chat gpt') || cmd === 'chatgpt') {
+                openURL('https://chat.openai.com', 'ChatGPT');
+                return "Opening ChatGPT for you.";
+            }
+
+            // Open Google Docs
+            if (cmd.includes('open docs') || cmd.includes('google docs')) {
+                openURL('https://docs.google.com', 'Google Docs');
+                return "Opening Google Docs for you.";
+            }
+
+            // Open Google Sheets
+            if (cmd.includes('open sheets') || cmd.includes('google sheets')) {
+                openURL('https://sheets.google.com', 'Google Sheets');
+                return "Opening Google Sheets for you.";
+            }
+
+            // Open Google Slides
+            if (cmd.includes('open slides') || cmd.includes('google slides') || cmd.includes('open presentation')) {
+                openURL('https://slides.google.com', 'Google Slides');
+                return "Opening Google Slides for you.";
+            }
+
+            // ============================================
+            // SEARCH FUNCTIONS
+            // ============================================
+
+            // Google Search
+            if (cmd.includes('search for') || cmd.includes('search ') || cmd.includes('google ') || cmd.startsWith('look up ')) {
+                let query = cmd.replace('search for', '').replace('search', '').replace('google', '').replace('look up', '').trim();
+                if (query) {
+                    openURL('https://www.google.com/search?q=' + encodeURIComponent(query), 'Google Search: ' + query);
+                    return `Searching Google for "${query}".`;
+                }
+            }
+
+            // YouTube Search
+            if (cmd.includes('search youtube for') || cmd.includes('youtube search') || cmd.includes('find video')) {
+                let query = cmd.replace('search youtube for', '').replace('youtube search', '').replace('find video', '').replace('for', '').trim();
+                if (query) {
+                    openURL('https://www.youtube.com/results?search_query=' + encodeURIComponent(query), 'YouTube Search: ' + query);
+                    return `Searching YouTube for "${query}".`;
+                }
+            }
+
+            // Wikipedia Search
+            if (cmd.includes('wikipedia') && (cmd.includes('search') || cmd.includes('about') || cmd.includes('what is'))) {
+                let query = cmd.replace('search wikipedia for', '').replace('wikipedia', '').replace('search', '').replace('what is', '').replace('about', '').trim();
+                if (query) {
+                    openURL('https://en.wikipedia.org/wiki/Special:Search?search=' + encodeURIComponent(query), 'Wikipedia: ' + query);
+                    return `Searching Wikipedia for "${query}".`;
+                }
+            }
+
+            // ============================================
+            // PLAY MUSIC / VIDEOS
+            // ============================================
+
+            // Play music on YouTube
+            if (cmd.includes('play ') || cmd.includes('play music')) {
+                let song = cmd.replace('play music', '').replace('play', '').replace('on youtube', '').replace('song', '').trim();
+                if (song) {
+                    openURL('https://www.youtube.com/results?search_query=' + encodeURIComponent(song + ' music'), 'Playing: ' + song);
+                    return `Playing "${song}" on YouTube.`;
+                } else {
+                    openURL('https://www.youtube.com/feed/explore', 'YouTube Music');
+                    return "Opening YouTube Music for you.";
+                }
+            }
+
+            // ============================================
+            // CALCULATIONS
+            // ============================================
+
+            // Calculator
+            if (cmd.includes('calculate') || cmd.includes('what is') && (cmd.includes('+') || cmd.includes('-') || cmd.includes('*') || cmd.includes('/') || cmd.includes('plus') || cmd.includes('minus') || cmd.includes('times') || cmd.includes('divided'))) {
+                let expr = cmd.replace('calculate', '').replace('what is', '').replace('equals', '')
+                    .replace('plus', '+').replace('minus', '-').replace('times', '*').replace('multiplied by', '*')
+                    .replace('divided by', '/').replace('x', '*').trim();
+                try {
+                    // Safe eval for math only
+                    const result = Function('"use strict"; return (' + expr + ')')();
+                    if (!isNaN(result)) {
+                        return `The answer is ${result}.`;
+                    }
+                } catch (e) {
+                    return "I couldn't calculate that. Please try a simpler expression like 'calculate 5 plus 3'.";
+                }
+            }
+
+            // ============================================
+            // NOTES
+            // ============================================
+
+            // Take a note
+            if (cmd.includes('take a note') || cmd.includes('make a note') || cmd.includes('note that') || cmd.includes('remember that')) {
+                let note = cmd.replace('take a note', '').replace('make a note', '').replace('note that', '').replace('remember that', '').replace(':', '').trim();
+                if (note) {
+                    notes.push({ text: note, time: new Date().toLocaleString() });
+                    saveNotes();
+                    return `Got it! I've saved your note: "${note}".`;
+                }
+                return "What would you like me to note?";
+            }
+
+            // Read notes
+            if (cmd.includes('read my notes') || cmd.includes('show my notes') || cmd.includes('what are my notes') || cmd.includes('my notes')) {
+                if (notes.length === 0) {
+                    return "You don't have any notes yet. Say 'take a note' followed by your note to save one.";
+                }
+                const recentNotes = notes.slice(-3).map((n, i) => `${i + 1}. ${n.text}`).join('. ');
+                return `Here are your recent notes: ${recentNotes}`;
+            }
+
+            // Clear notes
+            if (cmd.includes('clear my notes') || cmd.includes('delete my notes') || cmd.includes('remove all notes')) {
+                notes = [];
+                saveNotes();
+                return "All your notes have been cleared.";
+            }
+
+            // ============================================
+            // REMINDERS
+            // ============================================
+
+            // Set reminder
+            if (cmd.includes('remind me') || cmd.includes('set a reminder') || cmd.includes('set reminder')) {
+                let reminder = cmd.replace('remind me to', '').replace('remind me', '').replace('set a reminder to', '').replace('set a reminder', '').replace('set reminder', '').trim();
+                if (reminder) {
+                    reminders.push({ text: reminder, time: new Date().toLocaleString() });
+                    saveReminders();
+                    return `Reminder set: "${reminder}". I'll keep track of this for you.`;
+                }
+                return "What would you like me to remind you about?";
+            }
+
+            // Show reminders
+            if (cmd.includes('my reminders') || cmd.includes('show reminders') || cmd.includes('what are my reminders')) {
+                if (reminders.length === 0) {
+                    return "You don't have any reminders. Say 'remind me to' followed by your task to set one.";
+                }
+                const recentReminders = reminders.slice(-3).map((r, i) => `${i + 1}. ${r.text}`).join('. ');
+                return `Here are your reminders: ${recentReminders}`;
+            }
+
+            // Clear reminders
+            if (cmd.includes('clear reminders') || cmd.includes('delete reminders')) {
+                reminders = [];
+                saveReminders();
+                return "All reminders have been cleared.";
+            }
+
+            // ============================================
+            // UTILITY COMMANDS
+            // ============================================
+
+            // Weather (open weather website)
+            if (cmd.includes('weather')) {
+                openURL('https://www.google.com/search?q=weather', 'Weather');
+                return "Opening weather information for you.";
+            }
+
+            // News
+            if (cmd.includes('news') || cmd.includes('headlines')) {
+                openURL('https://news.google.com', 'Google News');
+                return "Opening Google News for you.";
+            }
+
+            // Translate
+            if (cmd.includes('translate')) {
+                openURL('https://translate.google.com', 'Google Translate');
+                return "Opening Google Translate for you.";
+            }
+
+            // Timer / Stopwatch
+            if (cmd.includes('timer') || cmd.includes('stopwatch')) {
+                openURL('https://www.google.com/search?q=timer', 'Timer');
+                return "Opening a timer for you.";
+            }
+
+            // Unit converter
+            if (cmd.includes('convert') || cmd.includes('converter')) {
+                let query = cmd;
+                openURL('https://www.google.com/search?q=' + encodeURIComponent(query), 'Converter');
+                return "Opening converter for you.";
+            }
+
+            // Directions / Navigation
+            if (cmd.includes('directions to') || cmd.includes('navigate to') || cmd.includes('how to get to')) {
+                let destination = cmd.replace('directions to', '').replace('navigate to', '').replace('how to get to', '').trim();
+                if (destination) {
+                    openURL('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(destination), 'Directions to ' + destination);
+                    return `Getting directions to ${destination}.`;
+                }
+            }
+
+            // Find nearby places
+            if (cmd.includes('find') && (cmd.includes('near me') || cmd.includes('nearby'))) {
+                let place = cmd.replace('find', '').replace('near me', '').replace('nearby', '').trim();
+                if (place) {
+                    openURL('https://www.google.com/maps/search/' + encodeURIComponent(place + ' near me'), 'Finding ' + place);
+                    return `Finding ${place} near you.`;
+                }
+            }
+
+            // ============================================
+            // INFORMATION QUERIES
+            // ============================================
+
             // Time
-            if (command.includes('time')) {
+            if (cmd.includes('time')) {
                 const now = new Date();
                 const hours = now.getHours();
                 const minutes = now.getMinutes().toString().padStart(2, '0');
@@ -803,57 +1379,99 @@
                 const displayHours = hours % 12 || 12;
                 return `The current time is ${displayHours}:${minutes} ${period}.`;
             }
-            
+
             // Date
-            if (command.includes('date') || command.includes('today')) {
+            if (cmd.includes('date') || (cmd.includes('what') && cmd.includes('today'))) {
                 const now = new Date();
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 return `Today is ${now.toLocaleDateString('en-US', options)}.`;
             }
-            
+
+            // Day of week
+            if (cmd.includes('what day')) {
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                return `Today is ${days[new Date().getDay()]}.`;
+            }
+
+            // ============================================
+            // GREETINGS & CONVERSATION
+            // ============================================
+
+            // Greetings
+            if (cmd.includes('hello') || cmd.includes('hi ') || cmd === 'hi' || cmd.includes('hey ') || cmd === 'hey') {
+                return "Hello! I'm AURA, your AI assistant. I can open apps, search the web, play music, take notes, and much more. What would you like me to do?";
+            }
+
             // Name
-            if (command.includes('your name') || command.includes('who are you')) {
-                return "I am AURA, which stands for Advanced User Responsive AI. I'm your intelligent voice companion, designed to assist you with information and tasks.";
+            if (cmd.includes('your name') || cmd.includes('who are you')) {
+                return "I am AURA, your Advanced User Responsive AI. I can open websites, search Google, play music on YouTube, take notes, set reminders, do calculations, and much more!";
             }
-            
+
             // How are you
-            if (command.includes('how are you')) {
-                return "I'm functioning at optimal capacity, thank you for asking! All systems are running smoothly. How can I assist you?";
+            if (cmd.includes('how are you')) {
+                return "I'm running at full capacity! All systems operational. What can I help you with today?";
             }
-            
-            // Weather (simulated)
-            if (command.includes('weather')) {
-                return "I'm currently running locally without internet access to weather services. In a production environment, I would fetch real-time weather data for you.";
-            }
-            
+
             // Jokes
-            if (command.includes('joke') || command.includes('funny')) {
+            if (cmd.includes('joke') || cmd.includes('funny') || cmd.includes('make me laugh')) {
                 const jokes = [
                     "Why do programmers prefer dark mode? Because light attracts bugs!",
                     "Why did the AI go to therapy? It had too many neural issues!",
                     "I told my computer I needed a break. Now it won't stop sending me vacation ads.",
-                    "Why was the JavaScript developer sad? Because he didn't Node how to Express himself!"
+                    "Why was the JavaScript developer sad? Because he didn't Node how to Express himself!",
+                    "Why do Java developers wear glasses? Because they can't C sharp!",
+                    "A SQL query walks into a bar, approaches two tables and asks, 'Can I join you?'"
                 ];
                 return jokes[Math.floor(Math.random() * jokes.length)];
             }
-            
-            // Capabilities
-            if (command.includes('what can you do') || command.includes('help') || command.includes('capabilities')) {
-                return "I can help you with various tasks! Try asking me about the time, date, or tell me a joke. You can also ask about my name or how I'm doing. I'm here to assist you!";
+
+            // Capabilities / Help
+            if (cmd.includes('what can you do') || cmd.includes('help') || cmd.includes('capabilities') || cmd.includes('commands')) {
+                return "I can open apps like Google, YouTube, Gmail, and more. I can search the web, play music, take notes, set reminders, do calculations, get directions, and tell you the time. Try saying 'open YouTube' or 'search for recipes' or 'play some jazz music'!";
             }
-            
+
             // Thank you
-            if (command.includes('thank')) {
-                return "You're welcome! I'm always happy to help. Is there anything else you'd like to know?";
+            if (cmd.includes('thank')) {
+                return "You're welcome! Happy to help. Is there anything else you need?";
             }
-            
+
             // Goodbye
-            if (command.includes('bye') || command.includes('goodbye') || command.includes('see you')) {
-                return "Goodbye! It was a pleasure assisting you. Feel free to call on me anytime you need help.";
+            if (cmd.includes('bye') || cmd.includes('goodbye') || cmd.includes('see you')) {
+                return "Goodbye! Call me anytime you need help. Just say 'Hey Aura'!";
             }
-            
-            // Default
-            return `I understood: "${command}". While I'm still learning, I'm here to help! Try asking me about the time, date, or for a joke.`;
+
+            // Stop / Cancel
+            if (cmd.includes('stop') || cmd.includes('cancel') || cmd.includes('never mind')) {
+                return "Okay, cancelled. Let me know if you need anything else.";
+            }
+
+            // ============================================
+            // GENERIC OPEN COMMAND
+            // ============================================
+
+            if (cmd.startsWith('open ')) {
+                let site = cmd.replace('open ', '').trim();
+                // Try to open as a website
+                let url = site;
+                if (!site.includes('.')) {
+                    url = `https://www.${site}.com`;
+                } else if (!site.startsWith('http')) {
+                    url = `https://${site}`;
+                }
+                openURL(url, site);
+                return `Opening ${site} for you.`;
+            }
+
+            // ============================================
+            // DEFAULT - Try Google Search
+            // ============================================
+
+            // If nothing matches, offer to search
+            if (cmd.length > 3) {
+                return `I'm not sure about that. Would you like me to search for "${command}"? Just say "search for ${command}".`;
+            }
+
+            return "I didn't quite catch that. Try saying 'open YouTube', 'search for recipes', or 'what time is it'.";
         }
 
         // Speak using Text-to-Speech
@@ -868,13 +1486,13 @@
 
             // Try to get a good voice
             const voices = synthesis.getVoices();
-            const preferredVoices = voices.filter(v => 
-                v.name.includes('Google') || 
+            const preferredVoices = voices.filter(v =>
+                v.name.includes('Google') ||
                 v.name.includes('Microsoft') ||
                 v.name.includes('Samantha') ||
                 v.name.includes('Alex')
             );
-            
+
             if (preferredVoices.length > 0) {
                 utterance.voice = preferredVoices[0];
             }
@@ -895,10 +1513,10 @@
         // Set State
         function setState(state) {
             currentState = state;
-            
+
             // Update orb
             orb.className = 'orb ' + state;
-            
+
             // Update status text
             statusText.className = 'status-text ' + state;
             statusText.textContent = state.toUpperCase();
@@ -911,7 +1529,7 @@
             entry.className = 'log-entry';
             entry.innerHTML = `<span>[${time}]</span>${message}`;
             logsContent.insertBefore(entry, logsContent.firstChild);
-            
+
             // Keep only last 50 logs
             while (logsContent.children.length > 50) {
                 logsContent.removeChild(logsContent.lastChild);
@@ -920,11 +1538,12 @@
 
         // Initialize when voices are loaded
         if (synthesis.onvoiceschanged !== undefined) {
-            synthesis.onvoiceschanged = () => {};
+            synthesis.onvoiceschanged = () => { };
         }
 
         // Start the app
         init();
     </script>
 </body>
+
 </html>
