@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA - AI Assistance Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-card: rgba(15, 20, 35, 0.8);
+            --accent: #00e5ff;
+            --accent2: #7c4dff;
+            --green: #00e676;
+            --orange: #ff9100;
+            --red: #ff5252;
+            --text: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e17, #0d1525, #0a1020);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr 300px;
+            grid-template-rows: auto 1fr;
+            min-height: 100vh;
+            gap: 16px;
+            padding: 16px;
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-time {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        .header-date {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-left: 16px;
+        }
+
+        /* Widget Styles */
+        .widget {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .widget-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .widget-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Left Panel - System Widgets */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            max-height: calc(100vh - 100px);
+        }
+
+        /* Battery Widget */
+        .battery-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .battery-icon {
+            width: 60px;
+            height: 28px;
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 3px;
+        }
+
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .battery-level {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), var(--accent));
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .battery-info {
+            flex: 1;
+        }
+
+        .battery-percent {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .battery-status {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        /* CPU Widget */
+        .cpu-meter {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .cpu-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .cpu-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .cpu-cores {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .core {
+            text-align: center;
+        }
+
+        .core-bar {
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .core-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, var(--accent), var(--accent2));
+            transition: height 0.3s ease;
+        }
+
+        .core-label {
+            font-size: 9px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* Memory Widget */
+        .memory-ring {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .memory-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .memory-ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 8;
+        }
+
+        .memory-ring-fill {
+            fill: none;
+            stroke: url(#memGradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .memory-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .memory-percent {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .memory-label {
+            font-size: 9px;
+            color: var(--text-dim);
+        }
+
+        .memory-details {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+            font-size: 11px;
+        }
+
+        .mem-stat {
+            text-align: center;
+        }
+
+        .mem-stat-value {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* Weather Widget */
+        .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .weather-icon {
+            font-size: 48px;
+        }
+
+        .weather-temp {
+            font-size: 36px;
+            font-weight: 600;
+        }
+
+        .weather-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .weather-location {
+            font-size: 12px;
+            color: var(--accent);
+            margin-top: 4px;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .weather-detail {
+            text-align: center;
+        }
+
+        .weather-detail-value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .weather-detail-label {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        /* Network Widget */
+        .network-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .network-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 230, 118, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .network-icon.offline {
+            background: rgba(255, 82, 82, 0.1);
+        }
+
+        .network-type {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .network-speed {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .network-bars {
+            display: flex;
+            gap: 4px;
+            margin-top: 12px;
+        }
+
+        .net-bar {
+            flex: 1;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .net-bar-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--accent);
+            transition: height 0.3s ease;
+        }
+
+        .net-bar-fill.download {
+            background: var(--green);
+        }
+
+        .net-bar-fill.upload {
+            background: var(--accent2);
+        }
+
+        /* Center - Orb */
+        .center-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .orb-wrapper {
+            position: relative;
+            width: 280px;
+            height: 280px;
+        }
+
+        .orb {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(0, 229, 255, 0.6), rgba(124, 77, 255, 0.4) 50%, rgba(10, 14, 23, 0.9));
+            box-shadow: 0 0 80px rgba(0, 229, 255, 0.4), inset 0 0 60px rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: orbPulse 4s ease-in-out infinite;
+        }
+
+        .orb.listening {
+            animation: orbListen 1s ease-in-out infinite;
+            box-shadow: 0 0 120px rgba(0, 230, 118, 0.6);
+        }
+
+        @keyframes orbPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.03);
+            }
+        }
+
+        @keyframes orbListen {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+        }
+
+        .orb-rings {
+            position: absolute;
+            inset: -30px;
+            pointer-events: none;
+        }
+
+        .orb-ring {
+            position: absolute;
+            inset: 0;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 50%;
+            animation: ringRotate 20s linear infinite;
+        }
+
+        .orb-ring:nth-child(2) {
+            inset: 15px;
+            animation-duration: 15s;
+            animation-direction: reverse;
+        }
+
+        @keyframes ringRotate {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .status-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            letter-spacing: 4px;
+            color: var(--accent);
+            margin-top: 24px;
+            text-transform: uppercase;
+        }
+
+        .query-display {
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-dim);
+            text-align: center;
+            max-width: 300px;
+        }
+
+        /* Right Panel - Info Widgets */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            max-height: calc(100vh - 100px);
+        }
+
+        /* Storage Widget */
+        .storage-drives {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .drive {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .drive-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(0, 229, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drive-info {
+            flex: 1;
+        }
+
+        .drive-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .drive-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .drive-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 3px;
+        }
+
+        .drive-space {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        /* Uptime Widget */
+        .uptime-display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            text-align: center;
+            color: var(--accent);
+            margin: 8px 0;
+        }
+
+        .uptime-label {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 229, 255, 0.1);
+            border-color: var(--accent);
+        }
+
+        .action-icon {
+            font-size: 20px;
+        }
+
+        /* Chat Messages */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+        }
+
+        .chat-msg {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            max-width: 90%;
+            animation: msgIn 0.3s ease;
+        }
+
+        @keyframes msgIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #000;
+        }
+
+        .chat-msg.ai {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .chat-send {
+            width: 44px;
+            height: 44px;
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            color: #000;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">AURA</div>
+            <div style="display:flex;align-items:center;">
+                <span class="header-time" id="liveTime">00:00:00</span>
+                <span class="header-date" id="liveDate">Loading...</span>
+            </div>
+        </header>
+
+        <!-- Left Panel - System Widgets -->
+        <aside class="left-panel">
+            <!-- Battery -->
+            <div class="widget">
+                <div class="widget-title"><span class="widget-icon">🔋</span> Battery</div>
+                <div class="battery-container">
+                    <div class="battery-icon">
+                        <div class="battery-level" id="batteryLevel" style="width:100%"></div>
+                    </div>
+                    <div class="battery-info">
+                        <div class="battery-percent"><span id="batteryPercent">100</span>%</div>
+                        <div class="battery-status" id="batteryStatus">Checking...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CPU -->
+            <div class="widget">
+                <div class="widget-title"><span class="widget-icon">⚡</span> CPU Usage</div>
+                <div class="cpu-value"><span id="cpuPercent">0</span>%</div>
+                <div class="cpu-meter">
+                    <div class="cpu-bar" id="cpuBar" style="width:0%"></div>
+                </div>
+                <div class="cpu-cores" id="cpuCores"></div>
+            </div>
+
+            <!-- Memory -->
+            <div class="widget">
+                <div class="widget-title"><span class="widget-icon">💾</span> Memory</div>
+                <div class="memory-ring">
+                    <svg width="80" height="80" viewBox="0 0 80 80">
+                        <defs>
+                            <linearGradient id="memGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#00E5FF" />
+                                <stop offset="100%" style="stop-color:#7C4DFF" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="memory-ring-bg" cx="40" cy="40" r="32" />
+                        <circle class="memory-ring-fill" id="memoryRing" cx="40" cy="40" r="32" stroke-dasharray="201"
+                            stroke-dashoffset="201" />
+                    </svg>
+                    <div class="memory-text">
+                        <div class="memory-percent" id="memPercent">0%</div>
+                        <div class="memory-label">Used</div>
+                    </div>
+                </div>
+                <div class="memory-details">
+                    <div class="mem-stat">
+                        <div class="mem-stat-value" id="memUsed">0 GB</div>
+                        <div>Used</div>
+                    </div>
+                    <div class="mem-stat">
+                        <div class="mem-stat-value" id="memTotal">0 GB</div>
+                        <div>Total</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network -->
+            <div class="widget">
+                <div class="widget-title"><span class="widget-icon">📶</span> Network</div>
+                <div class="network-status">
+                    <div class="network-icon" id="networkIcon">📶</div>
+                    <div>
+                        <div class="network-type" id="networkType">Checking...</div>
+                        <div class="network-speed" id="networkSpeed">-- Mbps</div>
+                    </div>
+                </div>
+                <div class="network-bars">
+                    <div class="net-bar">
+                        <div class="net-bar-fill download" id="downloadBar" style="height:0%"></div>
+                    </div>
+                    <div class="net-bar">
+                        <div class="net-bar-fill upload" id="uploadBar" style="height:0%"></div>
+                    </div>
+                </div>
+                <div
+                    style="display:flex;justify-content:space-around;margin-top:8px;font-size:10px;color:var(--text-dim);">
+                    <span>↓ <span id="downloadSpeed">0</span> Mbps</span>
+                    <span>↑ <span id="uploadSpeed">0</span> Mbps</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center - Orb -->
+        <main class="center-panel">
+            <div class="orb-wrapper">
+                <div class="orb-rings">
+                    <div class="orb-ring"></div>
+                    <div class="orb-ring"></div>
+                </div>
+                <div class="orb" id="orb" onclick="toggleListening()"></div>
+            </div>
+            <div class="status-text" id="statusText">Ready</div>
+            <p class="query-display" id="queryDisplay">Click orb or press Space to speak</p>
+        </main>
+
+        <!-- Right Panel -->
+        <aside class="right-panel">
+            <!-- Weather -->
+            <div class="widget">
+                <div class="widget-title"><span class="widget-icon">🌤️</span> Weather</div>
+                <div class="weather-main">
+                    <div class="weather-icon" id="weatherIcon">🌤️</div>
+                    <div>
+                        <div class="weather-temp"><span id="weatherTemp">--</span>°C</div>
+                        <div class="weather-desc" id="weatherDesc">Loading...</div>
+                        <div class="weather-location" id="weatherLocation">📍 --</div>
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <div class="weather-detail">
+                        <div class="weather-detail-value" id="weatherHumidity">--%</div>
+                        <div class="weather-detail-label">Humidity</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="weather-detail-value" id="weatherWind">-- km/h</div>
+                        <div class="weather-detail-label">Wind</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="weather-detail-value" id="weatherFeels">--°</div>
+                        <div class="weather-detail-label">Feels Like</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Storage -->
+            <div class="widget">
+                <div class="widget-title"><span class="widget-icon">💿</span> Storage</div>
+                <div class="storage-drives" id="storageDrives">
+                    <div class="drive">
+                        <div class="drive-icon">C:</div>
+                        <div class="drive-info">
+                            <div class="drive-name">System Drive</div>
+                            <div class="drive-bar">
+                                <div class="drive-fill" style="width:65%"></div>
+                            </div>
+                        </div>
+                        <div class="drive-space">65%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Uptime -->
+            <div class="widget">
+                <div class="widget-title"><span class="widget-icon">⏱️</span> Session Time</div>
+                <div class="uptime-display" id="uptimeDisplay">00:00:00</div>
+                <div class="uptime-label">Active Session Duration</div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="widget">
+                <div class="widget-title"><span class="widget-icon">⚡</span> Quick Actions</div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="openApp('youtube')"><span
+                            class="action-icon">▶️</span>YouTube</button>
+                    <button class="action-btn" onclick="openApp('google')"><span
+                            class="action-icon">🔍</span>Search</button>
+                    <button class="action-btn" onclick="openApp('gmail')"><span
+                            class="action-icon">📧</span>Gmail</button>
+                    <button class="action-btn" onclick="openApp('maps')"><span
+                            class="action-icon">🗺️</span>Maps</button>
+                </div>
+            </div>
+
+            <!-- Chat -->
+            <div class="widget chat-container">
+                <div class="widget-title"><span class="widget-icon">💬</span> Assistant</div>
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input-row">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type here..."
+                        onkeypress="handleKey(event)">
+                    <button class="chat-send" onclick="sendMessage()">↑</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // ========================================
+        // STATE
+        // ========================================
+        let isListening = false;
+        let recognition = null;
+        let synthesis = window.speechSynthesis;
+        let sessionStart = Date.now();
+
+        const orb = document.getElementById('orb');
+        const statusText = document.getElementById('statusText');
+        const queryDisplay = document.getElementById('queryDisplay');
+
+        // ========================================
+        // INIT
+        // ========================================
+        function init() {
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            initBattery();
+            initCPU();
+            initMemory();
+            initNetwork();
+            initWeather();
+            initUptime();
+            initSpeech();
+
+            addChat('ai', 'Hello! I am AURA. How can I help you?');
+
+            document.addEventListener('keydown', e => {
+                if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+                    e.preventDefault();
+                    toggleListening();
+                }
+            });
+        }
+
+        // ========================================
+        // TIME
+        // ========================================
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('liveTime').textContent = now.toLocaleTimeString();
+            document.getElementById('liveDate').textContent = now.toLocaleDateString('en-US', {
+                weekday: 'long', month: 'short', day: 'numeric'
+            });
+        }
+
+        // ========================================
+        // BATTERY
+        // ========================================
+        async function initBattery() {
+            if ('getBattery' in navigator) {
+                const battery = await navigator.getBattery();
+                updateBattery(battery);
+                battery.addEventListener('levelchange', () => updateBattery(battery));
+                battery.addEventListener('chargingchange', () => updateBattery(battery));
+            } else {
+                document.getElementById('batteryStatus').textContent = 'Not available';
+            }
+        }
+
+        function updateBattery(battery) {
+            const level = Math.round(battery.level * 100);
+            document.getElementById('batteryPercent').textContent = level;
+            document.getElementById('batteryLevel').style.width = level + '%';
+            document.getElementById('batteryStatus').textContent = battery.charging ? '⚡ Charging' : 'On Battery';
+
+            const levelEl = document.getElementById('batteryLevel');
+            if (level < 20) levelEl.style.background = 'var(--red)';
+            else if (level < 50) levelEl.style.background = 'var(--orange)';
+            else levelEl.style.background = 'linear-gradient(90deg, var(--green), var(--accent))';
+        }
+
+        // ========================================
+        // CPU (Simulated)
+        // ========================================
+        function initCPU() {
+            // Create core displays
+            const coresEl = document.getElementById('cpuCores');
+            for (let i = 0; i < 4; i++) {
+                coresEl.innerHTML += `
+                    <div class="core">
+                        <div class="core-bar"><div class="core-fill" id="core${i}" style="height:0%"></div></div>
+                        <div class="core-label">Core ${i + 1}</div>
+                    </div>
+                `;
+            }
+            updateCPU();
+            setInterval(updateCPU, 1000);
+        }
+
+        function updateCPU() {
+            // Simulate CPU usage
+            const total = 20 + Math.random() * 40;
+            document.getElementById('cpuPercent').textContent = Math.round(total);
+            document.getElementById('cpuBar').style.width = total + '%';
+
+            for (let i = 0; i < 4; i++) {
+                const coreUsage = 10 + Math.random() * 60;
+                document.getElementById('core' + i).style.height = coreUsage + '%';
+            }
+        }
+
+        // ========================================
+        // MEMORY (Simulated)
+        // ========================================
+        function initMemory() {
+            updateMemory();
+            setInterval(updateMemory, 2000);
+        }
+
+        function updateMemory() {
+            const used = 4 + Math.random() * 4;
+            const total = 16;
+            const percent = (used / total) * 100;
+
+            document.getElementById('memPercent').textContent = Math.round(percent) + '%';
+            document.getElementById('memUsed').textContent = used.toFixed(1) + ' GB';
+            document.getElementById('memTotal').textContent = total + ' GB';
+
+            const circumference = 201;
+            const offset = circumference - (percent / 100) * circumference;
+            document.getElementById('memoryRing').style.strokeDashoffset = offset;
+        }
+
+        // ========================================
+        // NETWORK
+        // ========================================
+        function initNetwork() {
+            updateNetwork();
+            setInterval(updateNetwork, 1500);
+        }
+
+        function updateNetwork() {
+            const online = navigator.onLine;
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+
+            document.getElementById('networkIcon').textContent = online ? '📶' : '📵';
+            document.getElementById('networkIcon').className = 'network-icon' + (online ? '' : ' offline');
+            document.getElementById('networkType').textContent = online ? (connection?.effectiveType?.toUpperCase() || 'Connected') : 'Offline';
+            document.getElementById('networkSpeed').textContent = connection?.downlink ? connection.downlink + ' Mbps' : (online ? 'Good' : 'No connection');
+
+            const down = 20 + Math.random() * 60;
+            const up = 5 + Math.random() * 25;
+            document.getElementById('downloadBar').style.height = down + '%';
+            document.getElementById('uploadBar').style.height = up + '%';
+            document.getElementById('downloadSpeed').textContent = down.toFixed(1);
+            document.getElementById('uploadSpeed').textContent = up.toFixed(1);
+        }
+
+        // ========================================
+        // WEATHER
+        // ========================================
+        async function initWeather() {
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    try {
+                        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code`);
+                        const data = await res.json();
+                        updateWeather(data);
+                    } catch (e) {
+                        setDefaultWeather();
+                    }
+                }, () => setDefaultWeather());
+            } else {
+                setDefaultWeather();
+            }
+        }
+
+        function updateWeather(data) {
+            const current = data.current;
+            document.getElementById('weatherTemp').textContent = Math.round(current.temperature_2m);
+            document.getElementById('weatherHumidity').textContent = current.relative_humidity_2m + '%';
+            document.getElementById('weatherWind').textContent = Math.round(current.wind_speed_10m) + ' km/h';
+            document.getElementById('weatherFeels').textContent = Math.round(current.apparent_temperature) + '°';
+
+            const code = current.weather_code;
+            const icons = { 0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 51: '🌧️', 61: '🌧️', 71: '❄️', 95: '⛈️' };
+            const desc = { 0: 'Clear', 1: 'Mostly Clear', 2: 'Partly Cloudy', 3: 'Cloudy', 45: 'Foggy', 51: 'Drizzle', 61: 'Rain', 71: 'Snow', 95: 'Thunderstorm' };
+
+            document.getElementById('weatherIcon').textContent = icons[code] || '🌤️';
+            document.getElementById('weatherDesc').textContent = desc[code] || 'Fair';
+            document.getElementById('weatherLocation').textContent = '📍 Current Location';
+        }
+
+        function setDefaultWeather() {
+            document.getElementById('weatherTemp').textContent = '28';
+            document.getElementById('weatherDesc').textContent = 'Partly Cloudy';
+            document.getElementById('weatherLocation').textContent = '📍 Location unavailable';
+            document.getElementById('weatherHumidity').textContent = '65%';
+            document.getElementById('weatherWind').textContent = '12 km/h';
+            document.getElementById('weatherFeels').textContent = '30°';
+        }
+
+        // ========================================
+        // UPTIME
+        // ========================================
+        function initUptime() {
+            updateUptime();
+            setInterval(updateUptime, 1000);
+        }
+
+        function updateUptime() {
+            const elapsed = Date.now() - sessionStart;
+            const hours = Math.floor(elapsed / 3600000);
+            const mins = Math.floor((elapsed % 3600000) / 60000);
+            const secs = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('uptimeDisplay').textContent =
+                String(hours).padStart(2, '0') + ':' +
+                String(mins).padStart(2, '0') + ':' +
+                String(secs).padStart(2, '0');
+        }
+
+        // ========================================
+        // SPEECH RECOGNITION
+        // ========================================
+        function initSpeech() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SR();
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    orb.classList.add('listening');
+                    statusText.textContent = 'Listening...';
+                };
+
+                recognition.onresult = (e) => {
+                    let text = '';
+                    for (let i = e.resultIndex; i < e.results.length; i++) {
+                        text += e.results[i][0].transcript;
+                        if (e.results[i].isFinal) processCommand(text);
+                    }
+                    queryDisplay.textContent = text || 'Listening...';
+                };
+
+                recognition.onend = () => {
+                    isListening = false;
+                    orb.classList.remove('listening');
+                    statusText.textContent = 'Ready';
+                };
+
+                recognition.onerror = () => {
+                    isListening = false;
+                    orb.classList.remove('listening');
+                    statusText.textContent = 'Ready';
+                };
+            }
+        }
+
+        function toggleListening() {
+            if (!recognition) return addChat('ai', 'Speech not supported. Use Chrome.');
+            if (isListening) {
+                recognition.stop();
+            } else {
+                isListening = true;
+                recognition.start();
+            }
+        }
+
+        function processCommand(text) {
+            addChat('user', text);
+            const response = getResponse(text.toLowerCase());
+            addChat('ai', response);
+            speak(response);
+            queryDisplay.textContent = 'Click orb or press Space to speak';
+        }
+
+        function getResponse(cmd) {
+            if (cmd.includes('time')) return `It's ${new Date().toLocaleTimeString()}.`;
+            if (cmd.includes('date')) return `Today is ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`;
+            if (cmd.includes('weather')) return `Current temperature is ${document.getElementById('weatherTemp').textContent}°C.`;
+            if (cmd.includes('battery')) return `Battery is at ${document.getElementById('batteryPercent').textContent}%.`;
+            if (cmd.includes('hello') || cmd.includes('hi')) return 'Hello! How can I help you?';
+            if (cmd.includes('joke')) return 'Why do programmers prefer dark mode? Because light attracts bugs!';
+            if (cmd.includes('open youtube')) { window.open('https://youtube.com', '_blank'); return 'Opening YouTube.'; }
+            if (cmd.includes('open google')) { window.open('https://google.com', '_blank'); return 'Opening Google.'; }
+            if (cmd.includes('open gmail')) { window.open('https://mail.google.com', '_blank'); return 'Opening Gmail.'; }
+            if (cmd.includes('search')) {
+                const q = cmd.replace('search', '').replace('for', '').trim();
+                window.open('https://google.com/search?q=' + encodeURIComponent(q), '_blank');
+                return `Searching for "${q}".`;
+            }
+            return `I heard "${cmd}". How can I help?`;
+        }
+
+        function speak(text) {
+            synthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            synthesis.speak(u);
+        }
+
+        // ========================================
+        // CHAT
+        // ========================================
+        function addChat(type, text) {
+            const el = document.createElement('div');
+            el.className = 'chat-msg ' + type;
+            el.textContent = text;
+            document.getElementById('chatMessages').appendChild(el);
+            document.getElementById('chatMessages').scrollTop = 99999;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (text) {
+                input.value = '';
+                addChat('user', text);
+                const response = getResponse(text.toLowerCase());
+                setTimeout(() => addChat('ai', response), 500);
+            }
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        // ========================================
+        // QUICK ACTIONS
+        // ========================================
+        function openApp(app) {
+            const urls = {
+                youtube: 'https://youtube.com',
+                google: 'https://google.com',
+                gmail: 'https://mail.google.com',
+                maps: 'https://maps.google.com'
+            };
+            window.open(urls[app], '_blank');
+            addChat('ai', `Opening ${app}...`);
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
