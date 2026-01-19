@@ -4,7 +4,7 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=200&section=header&text=AURA&fontSize=80&fontColor=fff&animation=twinkling&fontAlignY=35&desc=Advanced%20User%20Responsive%20AI&descAlignY=55&descSize=20" />
 
 <br/>
-
+ 
 <!-- Typing Animation -->
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&duration=3000&pause=1000&color=6366F1&center=true&vCenter=true&random=false&width=600&lines=Your+Intelligent+Voice+Companion;Say+Hey+Aura+to+Wake+Me+Up;JARVIS-Style+AI+Assistant;Opens+Apps+%7C+Searches+Web+%7C+Plays+Music" alt="Typing SVG" />
 
