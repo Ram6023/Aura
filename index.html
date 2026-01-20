@@ -1282,6 +1282,11 @@
         }
 
         /* Netflix */
+
+        .orb.visualizing {
+            animation: none !important;
+            transition: transform 0.05s ease-out, box-shadow 0.05s ease-out !important;
+        }
     </style>
 </head>
 
@@ -2416,11 +2421,105 @@
             }, duration);
         }
 
+        let visualizerContext = null;
+        let visualizerAnalyser = null;
+        let visualizerSource = null;
+        let visualizerAnimationId = null;
+
+        function startVisualizer() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                return speak("Audio visualization is not supported on this browser.");
+            }
+
+            if (!visualizerContext) {
+                visualizerContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            if (visualizerContext.state === 'suspended') {
+                visualizerContext.resume();
+            }
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    visualizerAnalyser = visualizerContext.createAnalyser();
+                    visualizerSource = visualizerContext.createMediaStreamSource(stream);
+                    visualizerSource.connect(visualizerAnalyser);
+
+                    visualizerAnalyser.fftSize = 64; // Low FFT size for punchy bass
+                    const bufferLength = visualizerAnalyser.frequencyBinCount;
+                    const dataArray = new Uint8Array(bufferLength);
+
+                    const orb = document.getElementById('orb');
+                    orb.classList.add('visualizing');
+                    statusText.textContent = "Listening to Music...";
+
+                    function animate() {
+                        visualizerAnimationId = requestAnimationFrame(animate);
+                        visualizerAnalyser.getByteFrequencyData(dataArray);
+
+                        // Calculate bass (lower frequencies)
+                        let bassTotal = 0;
+                        const bassBins = 8;
+                        for (let i = 0; i < bassBins; i++) bassTotal += dataArray[i];
+                        const bassAvg = bassTotal / bassBins;
+
+                        // Calculate mid/highs
+                        let midTotal = 0;
+                        for (let i = bassBins; i < bufferLength; i++) midTotal += dataArray[i];
+                        const midAvg = midTotal / (bufferLength - bassBins);
+
+                        // Dynamic scaling
+                        const scale = 1 + (bassAvg / 255) * 0.4;
+
+                        // Dynamic glow
+                        const glowSize = 100 + (bassAvg / 2);
+                        const glowColor = midAvg > 100 ? '255, 107, 107' : '212, 175, 55'; // Red tint on highs
+
+                        orb.style.transform = `scale(${scale})`;
+                        orb.style.boxShadow = `0 0 ${glowSize}px rgba(${glowColor}, 0.6), inset 0 0 60px rgba(255,255,255,0.1)`;
+
+                        // Rotate based on energy
+                        // orb.style.transform += ` rotate(${Date.now() / 10}deg)`; // Too chaotic
+                    }
+
+                    animate();
+                    speak("Visualizer started. Play some music!");
+                })
+                .catch(err => {
+                    console.error('Visualizer error:', err);
+                    speak("I need microphone access to visualize music.");
+                });
+        }
+
+        function stopVisualizer() {
+            if (visualizerAnimationId) {
+                cancelAnimationFrame(visualizerAnimationId);
+                visualizerAnimationId = null;
+            }
+
+            const orb = document.getElementById('orb');
+            orb.classList.remove('visualizing');
+            orb.style.transform = '';
+            orb.style.boxShadow = '';
+            statusText.textContent = "Ready";
+            speak("Visualizer stopped.");
+        }
+
         // Enhanced response system with fuzzy matching
         function getEnhancedResponse(cmd, confidence) {
             // Command patterns with fuzzy matching support
             const commands = [
                 // === SYSTEM & STATUS ===
+                {
+                    patterns: ['start visualizer', 'visualizer', 'visualise music', 'dance mode', 'party mode'],
+                    response: () => "Starting music visualizer...",
+                    action: () => startVisualizer()
+                },
+                {
+                    patterns: ['stop visualizer', 'end visualizer', 'stop dancing'],
+                    response: () => "Stopping visualizer.",
+                    action: () => stopVisualizer()
+                },
                 {
                     patterns: ['time', 'what time', 'current time', 'tell me the time', 'clock'],
                     response: () => `The current time is ${new Date().toLocaleTimeString()}.`
