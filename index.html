@@ -1515,42 +1515,109 @@
         }
 
         // ========================================
-        // SPEECH RECOGNITION WITH WAKE WORD
+        // ENHANCED SPEECH RECOGNITION SYSTEM
         // ========================================
         let wakeWordRecognition = null;
         let isWakeWordListening = false;
-        const WAKE_PHRASES = ['hey aura', 'hey ara', 'hey ora', 'a aura', 'hey aurora', 'hi aura'];
+        let commandHistory = [];
+        let lastConfidence = 0;
+        let recognitionRetryCount = 0;
+        const MAX_RETRY_COUNT = 5;
+        const CONFIDENCE_THRESHOLD = 0.5;
+
+        // Extended wake word variations for better detection
+        const WAKE_PHRASES = [
+            'hey aura', 'hey ara', 'hey ora', 'a aura', 'hey aurora', 'hi aura',
+            'aura', 'hello aura', 'ok aura', 'okay aura', 'yo aura',
+            'hey or', 'hey ura', 'hey our', 'heya aura', 'hay aura',
+            'halo aura', 'halo ara', 'hola aura', 'hey euro', 'hey aora'
+        ];
+
+        // Audio context for sound effects
+        let audioContext = null;
+
+        function getAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
 
         function initSpeech() {
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-                // Main command recognition
+                // Main command recognition with enhanced settings
                 recognition = new SR();
                 recognition.continuous = false;
                 recognition.interimResults = true;
                 recognition.lang = 'en-US';
+                recognition.maxAlternatives = 5; // Get multiple alternatives for better matching
 
                 recognition.onstart = () => {
+                    recognitionRetryCount = 0;
                     orb.classList.add('listening');
                     statusText.textContent = 'Listening...';
+                    updateConfidenceIndicator(0);
                     hideResponse();
+                    playListeningSound();
                 };
 
                 recognition.onresult = (e) => {
-                    let text = '';
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+                    let bestConfidence = 0;
+
                     for (let i = e.resultIndex; i < e.results.length; i++) {
-                        text += e.results[i][0].transcript;
-                        if (e.results[i].isFinal) processCommand(text);
+                        const result = e.results[i];
+                        const transcript = result[0].transcript;
+                        const confidence = result[0].confidence || 0.8;
+
+                        if (result.isFinal) {
+                            // Check all alternatives for best match
+                            let bestMatch = { text: transcript, confidence: confidence };
+                            for (let j = 0; j < result.length; j++) {
+                                if (result[j].confidence > bestMatch.confidence) {
+                                    bestMatch = { text: result[j].transcript, confidence: result[j].confidence };
+                                }
+                            }
+                            finalTranscript = bestMatch.text;
+                            bestConfidence = bestMatch.confidence;
+                            lastConfidence = bestConfidence;
+                        } else {
+                            interimTranscript += transcript;
+                            bestConfidence = Math.max(bestConfidence, confidence);
+                        }
                     }
-                    queryDisplay.textContent = text || 'Listening...';
+
+                    // Update confidence indicator
+                    updateConfidenceIndicator(bestConfidence);
+
+                    // Display current recognition
+                    if (finalTranscript) {
+                        queryDisplay.innerHTML = `<span class="recognized-text">${finalTranscript}</span>
+                            <span class="confidence-badge">${Math.round(bestConfidence * 100)}%</span>`;
+
+                        // Only process if confidence is above threshold
+                        if (bestConfidence >= CONFIDENCE_THRESHOLD) {
+                            processCommand(finalTranscript, bestConfidence);
+                        } else {
+                            // Ask for clarification if low confidence
+                            showResponse("I'm not sure I heard you correctly. Could you please repeat that?");
+                            speak("I'm not sure I heard you correctly. Could you please repeat that?");
+                        }
+                    } else if (interimTranscript) {
+                        queryDisplay.innerHTML = `<span class="interim-text">${interimTranscript}</span>
+                            <span class="confidence-badge interim">${Math.round(bestConfidence * 100)}%</span>`;
+                    }
                 };
 
                 recognition.onend = () => {
                     isListening = false;
                     orb.classList.remove('listening');
                     statusText.textContent = 'Ready';
-                    queryDisplay.textContent = 'Say "Hey Aura" or click orb';
+                    updateConfidenceIndicator(0);
+                    queryDisplay.innerHTML = 'Say <span class="wake-word">"Hey Aura"</span> or click orb';
                     // Restart wake word listening after command is done
                     setTimeout(startWakeWordListening, 500);
                 };
@@ -1558,9 +1625,38 @@
                 recognition.onerror = (e) => {
                     isListening = false;
                     orb.classList.remove('listening');
-                    statusText.textContent = 'Ready';
+
+                    // Enhanced error handling
+                    handleRecognitionError(e.error);
+
                     // Restart wake word listening on error
-                    setTimeout(startWakeWordListening, 500);
+                    if (recognitionRetryCount < MAX_RETRY_COUNT) {
+                        setTimeout(startWakeWordListening, 1000);
+                    }
+                };
+
+                recognition.onnomatch = () => {
+                    showResponse("I couldn't understand that. Please try speaking more clearly.");
+                    speak("I couldn't understand that. Please try speaking more clearly.");
+                };
+
+                recognition.onsoundstart = () => {
+                    statusText.textContent = 'Hearing you...';
+                    orb.classList.add('sound-detected');
+                };
+
+                recognition.onsoundend = () => {
+                    orb.classList.remove('sound-detected');
+                };
+
+                recognition.onspeechstart = () => {
+                    statusText.textContent = 'Processing speech...';
+                    orb.classList.add('speech-active');
+                };
+
+                recognition.onspeechend = () => {
+                    statusText.textContent = 'Analyzing...';
+                    orb.classList.remove('speech-active');
                 };
 
                 // Wake word recognition (continuous background listening)
@@ -1568,25 +1664,32 @@
                 wakeWordRecognition.continuous = true;
                 wakeWordRecognition.interimResults = true;
                 wakeWordRecognition.lang = 'en-US';
+                wakeWordRecognition.maxAlternatives = 3;
 
                 wakeWordRecognition.onresult = (e) => {
                     for (let i = e.resultIndex; i < e.results.length; i++) {
-                        const transcript = e.results[i][0].transcript.toLowerCase().trim();
+                        const result = e.results[i];
 
-                        // Check for wake word
-                        if (WAKE_PHRASES.some(phrase => transcript.includes(phrase))) {
-                            console.log('Wake word detected:', transcript);
-                            wakeWordRecognition.stop();
-                            isWakeWordListening = false;
+                        // Check all alternatives for wake word
+                        for (let j = 0; j < result.length; j++) {
+                            const transcript = result[j].transcript.toLowerCase().trim();
+                            const confidence = result[j].confidence || 0.7;
 
-                            // Visual feedback
-                            showWakeWordActivated();
+                            // Fuzzy matching for wake word
+                            if (isWakeWord(transcript) && confidence >= 0.4) {
+                                console.log('Wake word detected:', transcript, 'Confidence:', confidence);
+                                wakeWordRecognition.stop();
+                                isWakeWordListening = false;
 
-                            // Start listening for command
-                            setTimeout(() => {
-                                toggleListening();
-                            }, 300);
-                            return;
+                                // Visual feedback
+                                showWakeWordActivated();
+
+                                // Start listening for command after a short delay
+                                setTimeout(() => {
+                                    toggleListening();
+                                }, 400);
+                                return;
+                            }
                         }
                     }
                 };
@@ -1594,8 +1697,8 @@
                 wakeWordRecognition.onend = () => {
                     isWakeWordListening = false;
                     // Restart wake word listening if not in command mode
-                    if (!isListening) {
-                        setTimeout(startWakeWordListening, 1000);
+                    if (!isListening && recognitionRetryCount < MAX_RETRY_COUNT) {
+                        setTimeout(startWakeWordListening, 800);
                     }
                 };
 
@@ -1603,37 +1706,285 @@
                     isWakeWordListening = false;
                     if (e.error !== 'no-speech' && e.error !== 'aborted') {
                         console.log('Wake word error:', e.error);
+                        recognitionRetryCount++;
                     }
-                    // Restart on error
-                    if (!isListening) {
-                        setTimeout(startWakeWordListening, 2000);
+                    // Restart on error with exponential backoff
+                    if (!isListening && recognitionRetryCount < MAX_RETRY_COUNT) {
+                        const delay = Math.min(1000 * Math.pow(1.5, recognitionRetryCount), 10000);
+                        setTimeout(startWakeWordListening, delay);
                     }
                 };
 
                 // Start wake word listening
                 setTimeout(startWakeWordListening, 1000);
 
-                // Update status
-                queryDisplay.textContent = 'Say "Hey Aura" or click orb';
+                // Update status with styled text
+                queryDisplay.innerHTML = 'Say <span class="wake-word">"Hey Aura"</span> or click orb';
+
+                // Add styles for recognition feedback
+                addRecognitionStyles();
+            } else {
+                statusText.textContent = 'Speech not supported';
+                queryDisplay.textContent = 'Please use Chrome or Edge for voice features';
+                addChat('ai', '⚠️ Speech recognition is not supported in this browser. Please use Chrome or Edge for the best experience.');
             }
+        }
+
+        // Fuzzy matching for wake word detection
+        function isWakeWord(text) {
+            // Direct phrase match
+            if (WAKE_PHRASES.some(phrase => text.includes(phrase))) {
+                return true;
+            }
+
+            // Levenshtein distance based fuzzy matching
+            const words = text.split(' ');
+            for (const word of words) {
+                for (const phrase of WAKE_PHRASES) {
+                    const phraseWords = phrase.split(' ');
+                    for (const phraseWord of phraseWords) {
+                        if (levenshteinDistance(word, phraseWord) <= 2) {
+                            // Check if "hey" or similar is also present
+                            if (phraseWord === 'aura' || phraseWord === 'ara' || phraseWord === 'ora') {
+                                const hasHey = words.some(w =>
+                                    levenshteinDistance(w, 'hey') <= 1 ||
+                                    levenshteinDistance(w, 'hi') <= 1 ||
+                                    levenshteinDistance(w, 'hello') <= 2 ||
+                                    levenshteinDistance(w, 'ok') <= 1 ||
+                                    levenshteinDistance(w, 'yo') <= 1
+                                );
+                                if (hasHey) return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Check for just "aura" alone with high confidence
+            if (words.includes('aura') || words.some(w => levenshteinDistance(w, 'aura') <= 1)) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Levenshtein distance for fuzzy matching
+        function levenshteinDistance(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) {
+                matrix[i] = [i];
+            }
+            for (let j = 0; j <= a.length; j++) {
+                matrix[0][j] = j;
+            }
+
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        function handleRecognitionError(error) {
+            let message = '';
+            switch (error) {
+                case 'no-speech':
+                    message = 'No speech detected. Please try again.';
+                    statusText.textContent = 'No speech heard';
+                    break;
+                case 'audio-capture':
+                    message = 'No microphone detected. Please check your microphone.';
+                    statusText.textContent = 'Mic error';
+                    playErrorSound();
+                    break;
+                case 'not-allowed':
+                    message = 'Microphone permission denied. Please allow microphone access.';
+                    statusText.textContent = 'Permission denied';
+                    playErrorSound();
+                    break;
+                case 'network':
+                    message = 'Network error. Please check your internet connection.';
+                    statusText.textContent = 'Network error';
+                    recognitionRetryCount++;
+                    break;
+                case 'aborted':
+                    // User aborted, no message needed
+                    statusText.textContent = 'Ready';
+                    break;
+                default:
+                    message = 'Recognition error occurred. Retrying...';
+                    statusText.textContent = 'Error - Retrying';
+                    recognitionRetryCount++;
+            }
+
+            if (message && error !== 'no-speech' && error !== 'aborted') {
+                console.log('Speech recognition error:', error);
+                showResponse(message);
+            }
+        }
+
+        function updateConfidenceIndicator(confidence) {
+            const orbWrapper = document.querySelector('.orb-wrapper');
+            if (!orbWrapper) return;
+
+            // Remove existing indicator
+            let indicator = document.getElementById('confidenceRing');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'confidenceRing';
+                indicator.className = 'confidence-ring';
+                orbWrapper.appendChild(indicator);
+            }
+
+            // Update indicator based on confidence
+            if (confidence > 0) {
+                indicator.style.opacity = '1';
+                indicator.style.background = `conic-gradient(
+                    from 0deg,
+                    ${confidence >= 0.8 ? 'var(--emerald)' : confidence >= 0.5 ? 'var(--gold)' : 'var(--coral)'} 0deg,
+                    ${confidence >= 0.8 ? 'var(--emerald)' : confidence >= 0.5 ? 'var(--gold)' : 'var(--coral)'} ${confidence * 360}deg,
+                    transparent ${confidence * 360}deg
+                )`;
+            } else {
+                indicator.style.opacity = '0';
+            }
+        }
+
+        function addRecognitionStyles() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .wake-word {
+                    color: var(--gold);
+                    font-weight: 600;
+                }
+                
+                .recognized-text {
+                    color: var(--text);
+                }
+                
+                .interim-text {
+                    color: var(--text-dim);
+                    font-style: italic;
+                }
+                
+                .confidence-badge {
+                    display: inline-block;
+                    margin-left: 10px;
+                    padding: 2px 8px;
+                    background: linear-gradient(135deg, var(--gold), var(--rose-gold));
+                    color: #000;
+                    border-radius: 10px;
+                    font-size: 10px;
+                    font-weight: 600;
+                }
+                
+                .confidence-badge.interim {
+                    background: rgba(255, 255, 255, 0.2);
+                    color: var(--text-dim);
+                }
+                
+                .confidence-ring {
+                    position: absolute;
+                    inset: -8px;
+                    border-radius: 50%;
+                    opacity: 0;
+                    transition: all 0.3s ease;
+                    pointer-events: none;
+                    z-index: -1;
+                    mask: radial-gradient(transparent 120px, black 121px);
+                    -webkit-mask: radial-gradient(transparent 120px, black 121px);
+                }
+                
+                .orb.sound-detected {
+                    box-shadow: 
+                        0 0 100px rgba(16, 185, 129, 0.4),
+                        0 0 150px rgba(212, 175, 55, 0.3),
+                        inset 0 0 60px rgba(16, 185, 129, 0.2);
+                }
+                
+                .orb.speech-active {
+                    animation: speechPulse 0.5s ease-in-out infinite;
+                }
+                
+                @keyframes speechPulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.03); }
+                }
+                
+                .mic-indicator {
+                    position: fixed;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    padding: 8px 16px;
+                    background: rgba(0, 0, 0, 0.8);
+                    border: 1px solid var(--gold);
+                    border-radius: 20px;
+                    font-size: 12px;
+                    color: var(--gold);
+                    display: none;
+                    z-index: 1000;
+                }
+                
+                .mic-indicator.active {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                
+                .mic-indicator::before {
+                    content: '🎤';
+                    animation: micPulse 1s ease-in-out infinite;
+                }
+                
+                @keyframes micPulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.5; }
+                }
+            `;
+            document.head.appendChild(style);
         }
 
         function startWakeWordListening() {
             if (isWakeWordListening || isListening) return;
+            if (recognitionRetryCount >= MAX_RETRY_COUNT) {
+                console.log('Max retry count reached. Wake word listening disabled.');
+                statusText.textContent = 'Tap orb to speak';
+                return;
+            }
 
             try {
                 wakeWordRecognition.start();
                 isWakeWordListening = true;
+                recognitionRetryCount = 0; // Reset on successful start
                 console.log('Wake word listening started');
             } catch (e) {
                 console.log('Wake word start error:', e);
-                setTimeout(startWakeWordListening, 2000);
+                recognitionRetryCount++;
+                const delay = Math.min(1000 * Math.pow(1.5, recognitionRetryCount), 10000);
+                setTimeout(startWakeWordListening, delay);
             }
         }
 
         function stopWakeWordListening() {
             if (wakeWordRecognition && isWakeWordListening) {
-                wakeWordRecognition.stop();
+                try {
+                    wakeWordRecognition.stop();
+                } catch (e) {
+                    console.log('Stop wake word error:', e);
+                }
                 isWakeWordListening = false;
             }
         }
@@ -1644,6 +1995,7 @@
 
             // Visual pulse effect
             orb.style.boxShadow = '0 0 150px rgba(212, 175, 55, 0.8), 0 0 200px rgba(183, 110, 121, 0.6)';
+            orb.classList.add('activated');
             statusText.textContent = 'Yes?';
 
             const response = "I'm listening...";
@@ -1652,35 +2004,112 @@
 
             setTimeout(() => {
                 orb.style.boxShadow = '';
-            }, 500);
+                orb.classList.remove('activated');
+            }, 600);
         }
 
         function playActivationSound() {
-            // Create a pleasant activation chime
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
+                const ctx = getAudioContext();
+
+                // Create a pleasant multi-tone activation chime
+                const notes = [880, 1108, 1318]; // A5, C#6, E6 (A major chord)
+
+                notes.forEach((freq, i) => {
+                    const oscillator = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+
+                    oscillator.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.05);
+                    oscillator.type = 'sine';
+
+                    gainNode.gain.setValueAtTime(0, ctx.currentTime + i * 0.05);
+                    gainNode.gain.linearRampToValueAtTime(0.15, ctx.currentTime + i * 0.05 + 0.05);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+                    oscillator.start(ctx.currentTime + i * 0.05);
+                    oscillator.stop(ctx.currentTime + 0.5);
+                });
+            } catch (e) {
+                console.log('Audio not supported:', e);
+            }
+        }
+
+        function playListeningSound() {
+            try {
+                const ctx = getAudioContext();
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
 
                 oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
+                gainNode.connect(ctx.destination);
 
-                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
-                oscillator.frequency.setValueAtTime(1108, audioCtx.currentTime + 0.1); // C#6
+                oscillator.frequency.setValueAtTime(660, ctx.currentTime);
                 oscillator.type = 'sine';
 
-                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
 
-                oscillator.start(audioCtx.currentTime);
-                oscillator.stop(audioCtx.currentTime + 0.3);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.15);
             } catch (e) {
-                // Audio not supported, ignore
+                // Audio not supported
+            }
+        }
+
+        function playErrorSound() {
+            try {
+                const ctx = getAudioContext();
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+                oscillator.frequency.linearRampToValueAtTime(150, ctx.currentTime + 0.2);
+                oscillator.type = 'sawtooth';
+
+                gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.3);
+            } catch (e) {
+                // Audio not supported
+            }
+        }
+
+        function playSuccessSound() {
+            try {
+                const ctx = getAudioContext();
+                const notes = [523, 659]; // C5, E5
+
+                notes.forEach((freq, i) => {
+                    const oscillator = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+
+                    oscillator.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.1);
+                    oscillator.type = 'sine';
+
+                    gainNode.gain.setValueAtTime(0.1, ctx.currentTime + i * 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+
+                    oscillator.start(ctx.currentTime + i * 0.1);
+                    oscillator.stop(ctx.currentTime + 0.4);
+                });
+            } catch (e) {
+                // Audio not supported
             }
         }
 
         function toggleListening() {
-            if (!recognition) return addChat('ai', 'Speech not supported. Please use Chrome.');
+            if (!recognition) return addChat('ai', '⚠️ Speech not supported. Please use Chrome or Edge.');
 
             // Stop wake word listening when starting command listening
             stopWakeWordListening();
@@ -1689,45 +2118,240 @@
                 recognition.stop();
             } else {
                 isListening = true;
-                recognition.start();
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.log('Recognition start error:', e);
+                    isListening = false;
+                    setTimeout(() => toggleListening(), 500);
+                }
             }
         }
 
-        function processCommand(text) {
+        function processCommand(text, confidence = 1) {
+            // Add to command history
+            commandHistory.unshift({ text, confidence, timestamp: Date.now() });
+            if (commandHistory.length > 20) commandHistory.pop();
+
             addChat('user', text);
-            const response = getResponse(text.toLowerCase());
+
+            // Get response with fuzzy matching
+            const { response, action } = getEnhancedResponse(text.toLowerCase(), confidence);
+
             addChat('ai', response);
             showResponse(response);
             speak(response);
-            queryDisplay.textContent = 'Click orb or press Space to speak';
+
+            // Execute action if any
+            if (action) action();
+
+            // Play success sound for high confidence
+            if (confidence >= 0.8) {
+                playSuccessSound();
+            }
+
+            queryDisplay.innerHTML = 'Say <span class="wake-word">"Hey Aura"</span> or click orb';
         }
 
-        function getResponse(cmd) {
-            if (cmd.includes('time')) return `The current time is ${new Date().toLocaleTimeString()}.`;
-            if (cmd.includes('date')) return `Today is ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}.`;
-            if (cmd.includes('weather')) return `The current temperature is ${document.getElementById('weatherTemp').textContent}°C with ${document.getElementById('weatherDesc').textContent.toLowerCase()} conditions.`;
-            if (cmd.includes('battery')) return `Your battery is at ${document.getElementById('batteryPercent').textContent}%.`;
-            if (cmd.includes('hello') || cmd.includes('hi')) return 'Hello! It\'s wonderful to meet you. How may I assist you today?';
-            if (cmd.includes('how are you')) return 'I\'m functioning optimally, thank you for asking! Ready to help with anything you need.';
-            if (cmd.includes('joke')) return 'Why do programmers prefer dark mode? Because light attracts bugs! 😄';
-            if (cmd.includes('thank')) return 'You\'re most welcome! Is there anything else I can help you with?';
-            if (cmd.includes('open youtube')) { window.open('https://youtube.com', '_blank'); return 'Opening YouTube for you.'; }
-            if (cmd.includes('open google')) { window.open('https://google.com', '_blank'); return 'Opening Google Search.'; }
-            if (cmd.includes('open gmail')) { window.open('https://mail.google.com', '_blank'); return 'Opening Gmail.'; }
-            if (cmd.includes('search')) {
-                const q = cmd.replace('search', '').replace('for', '').trim();
-                window.open('https://google.com/search?q=' + encodeURIComponent(q), '_blank');
-                return `Searching for "${q}".`;
+        // Enhanced response system with fuzzy matching
+        function getEnhancedResponse(cmd, confidence) {
+            // Command patterns with fuzzy matching support
+            const commands = [
+                {
+                    patterns: ['time', 'what time', 'current time', 'tell me the time'],
+                    response: () => `The current time is ${new Date().toLocaleTimeString()}.`
+                },
+                {
+                    patterns: ['date', 'what date', 'today', 'what day', 'which day'],
+                    response: () => `Today is ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}.`
+                },
+                {
+                    patterns: ['weather', 'temperature', 'how hot', 'how cold', 'climate'],
+                    response: () => `The current temperature is ${document.getElementById('weatherTemp').textContent}°C with ${document.getElementById('weatherDesc').textContent.toLowerCase()} conditions. Humidity is at ${document.getElementById('weatherHumidity').textContent}.`
+                },
+                {
+                    patterns: ['battery', 'power', 'charge', 'battery level'],
+                    response: () => `Your battery is at ${document.getElementById('batteryPercent').textContent}%. ${document.getElementById('batteryStatus').textContent.includes('Charging') ? 'Currently charging.' : ''}`
+                },
+                {
+                    patterns: ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'],
+                    response: () => {
+                        const hour = new Date().getHours();
+                        const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+                        return `${greeting}! It's wonderful to connect with you. How may I assist you today?`;
+                    }
+                },
+                {
+                    patterns: ['how are you', 'how do you feel', 'how are things', 'how you doing'],
+                    response: () => "I'm functioning optimally, thank you for asking! All my systems are running smoothly and I'm ready to help with anything you need."
+                },
+                {
+                    patterns: ['joke', 'funny', 'make me laugh', 'tell me something funny'],
+                    response: () => {
+                        const jokes = [
+                            'Why do programmers prefer dark mode? Because light attracts bugs! 😄',
+                            'Why did the AI go to therapy? It had too many deep issues! 🤖',
+                            'What do you call a computer that sings? A-Dell! 🎤',
+                            'Why was the JavaScript developer sad? Because he didn\'t Node how to Express himself! 💻',
+                            'I told my computer I needed a break. Now it won\'t stop sending me Kit-Kat ads. 🍫'
+                        ];
+                        return jokes[Math.floor(Math.random() * jokes.length)];
+                    }
+                },
+                {
+                    patterns: ['thank', 'thanks', 'thank you', 'appreciate'],
+                    response: () => "You're most welcome! It's my pleasure to assist you. Is there anything else I can help you with?"
+                },
+                {
+                    patterns: ['cpu', 'processor', 'cpu usage'],
+                    response: () => `Current CPU usage is at ${document.getElementById('cpuPercent').textContent}%.`
+                },
+                {
+                    patterns: ['memory', 'ram', 'memory usage'],
+                    response: () => `Memory usage is at ${document.getElementById('memPercent').textContent}. You're using ${document.getElementById('memUsed').textContent} out of ${document.getElementById('memTotal').textContent}.`
+                },
+                {
+                    patterns: ['network', 'internet', 'connection', 'wifi'],
+                    response: () => `You're connected via ${document.getElementById('networkType').textContent} with an estimated speed of ${document.getElementById('networkSpeed').textContent}.`
+                },
+                {
+                    patterns: ['open youtube', 'youtube', 'play youtube'],
+                    response: () => 'Opening YouTube for you.',
+                    action: () => window.open('https://youtube.com', '_blank')
+                },
+                {
+                    patterns: ['open google', 'google', 'go to google'],
+                    response: () => 'Opening Google Search.',
+                    action: () => window.open('https://google.com', '_blank')
+                },
+                {
+                    patterns: ['open gmail', 'gmail', 'email', 'check email', 'mail'],
+                    response: () => 'Opening Gmail for you.',
+                    action: () => window.open('https://mail.google.com', '_blank')
+                },
+                {
+                    patterns: ['open maps', 'maps', 'google maps', 'navigation'],
+                    response: () => 'Opening Google Maps.',
+                    action: () => window.open('https://maps.google.com', '_blank')
+                },
+                {
+                    patterns: ['who are you', 'what are you', 'your name', 'introduce yourself'],
+                    response: () => "I'm AURA, your Advanced User Responsive AI assistant. I'm designed to help you with voice commands, system monitoring, and quick access to various services. Just say 'Hey Aura' anytime you need me!"
+                },
+                {
+                    patterns: ['what can you do', 'help', 'capabilities', 'features'],
+                    response: () => "I can tell you the time and date, check weather, monitor your battery and system stats, open websites like YouTube, Google, and Gmail, search the web, tell jokes, and much more! Just ask me anything."
+                },
+                {
+                    patterns: ['goodbye', 'bye', 'see you', 'later', 'good night'],
+                    response: () => {
+                        const hour = new Date().getHours();
+                        return hour >= 20 || hour < 6 ? 'Good night! Sweet dreams. I\'ll be here whenever you need me.' : 'Goodbye for now! Have a wonderful day. Just say "Hey Aura" when you need me again.';
+                    }
+                }
+            ];
+
+            // Check for search command
+            if (cmd.includes('search') || cmd.includes('look up') || cmd.includes('find')) {
+                const searchTerms = cmd.replace(/search|look up|find|for|about/gi, '').trim();
+                if (searchTerms) {
+                    return {
+                        response: `Searching for "${searchTerms}".`,
+                        action: () => window.open('https://google.com/search?q=' + encodeURIComponent(searchTerms), '_blank')
+                    };
+                }
             }
-            return `I heard "${cmd}". How may I assist you further?`;
+
+            // Find best matching command using fuzzy matching
+            let bestMatch = null;
+            let bestScore = 0;
+
+            for (const command of commands) {
+                for (const pattern of command.patterns) {
+                    const score = fuzzyMatch(cmd, pattern);
+                    if (score > bestScore && score > 0.4) {
+                        bestScore = score;
+                        bestMatch = command;
+                    }
+                }
+            }
+
+            if (bestMatch) {
+                return {
+                    response: bestMatch.response(),
+                    action: bestMatch.action || null
+                };
+            }
+
+            // Default response with context
+            return {
+                response: confidence < 0.6
+                    ? `I'm not quite sure I understood "${cmd}". Could you please rephrase that?`
+                    : `I heard "${cmd}". I'm still learning new commands. How else may I assist you?`,
+                action: null
+            };
+        }
+
+        // Fuzzy matching function
+        function fuzzyMatch(input, pattern) {
+            input = input.toLowerCase();
+            pattern = pattern.toLowerCase();
+
+            // Direct inclusion check
+            if (input.includes(pattern) || pattern.includes(input)) {
+                return 1;
+            }
+
+            // Word-by-word matching
+            const inputWords = input.split(/\s+/);
+            const patternWords = pattern.split(/\s+/);
+
+            let matches = 0;
+            for (const pw of patternWords) {
+                for (const iw of inputWords) {
+                    if (iw === pw || levenshteinDistance(iw, pw) <= Math.max(1, pw.length / 4)) {
+                        matches++;
+                        break;
+                    }
+                }
+            }
+
+            return matches / patternWords.length;
         }
 
         function speak(text) {
             synthesis.cancel();
-            const u = new SpeechSynthesisUtterance(text);
-            u.rate = 0.95;
-            u.pitch = 1;
-            synthesis.speak(u);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.95;
+            utterance.pitch = 1;
+            utterance.volume = 0.9;
+
+            // Try to find a good voice
+            const voices = synthesis.getVoices();
+            const preferredVoices = ['Google UK English Female', 'Microsoft Zira', 'Samantha', 'Karen'];
+
+            for (const preferred of preferredVoices) {
+                const voice = voices.find(v => v.name.includes(preferred));
+                if (voice) {
+                    utterance.voice = voice;
+                    break;
+                }
+            }
+
+            // Fallback to first English voice
+            if (!utterance.voice) {
+                const englishVoice = voices.find(v => v.lang.startsWith('en'));
+                if (englishVoice) utterance.voice = englishVoice;
+            }
+
+            synthesis.speak(utterance);
+        }
+
+        // Load voices when available
+        if (synthesis.onvoiceschanged !== undefined) {
+            synthesis.onvoiceschanged = () => {
+                // Voices loaded, speak function will use them
+            };
         }
 
         // ========================================
