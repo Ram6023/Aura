@@ -6,7 +6,7 @@
 <br/>
  
 <!-- Typing Animation -->
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&duration=3000&pause=1000&color=D4AF37&center=true&vCenter=true&random=false&width=600&lines=Your+Intelligent+Voice+Companion;Say+Hey+Aura+to+Wake+Me+Up;Premium+AI+Assistant+Dashboard;Real-time+System+Monitoring" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&duration=3000&pause=1000&color=D4AF37&center=true&vCenter=true&random=false&width=600&lines=Your+Intelligent+Voice+Companion;Say+Hey+Aura+to+Wake+Me+Up;Calculate+Math+%26+Set+Timers;Flip+Coins+%26+Roll+Dice;Open+Spotify+Netflix+%26+More" alt="Typing SVG" />
 
 <br/><br/>
 
@@ -114,11 +114,11 @@ npx http-server . -p 3000 -o
 ### 🎤 **Voice Commands**
 ```
 "Hey Aura"           → Wake word activation
-"What time is it?"   → Current time
-"What's today's date?" → Today's date
+"Calculate 5 * 10"   → Math calculator
+"Set timer for 10m"  → Visual countdown
+"Roll dice / Flip coin" → Randomizers
 "How's the weather?" → Weather info
 "Battery status"     → Battery level
-"Tell me a joke"     → Random joke
 ```
 
 </td>
@@ -126,11 +126,11 @@ npx http-server . -p 3000 -o
 
 ### 🌐 **Quick Actions**
 ```
-"Open YouTube"       → Opens YouTube
-"Open Google"        → Opens Google
-"Open Gmail"         → Opens Gmail
+"Open [App Name]"    → YouTube, Spotify, Netflix
+"Open [Social]"      → WhatsApp, Instagram, X
+"Open Gmail/Maps"    → Google Apps
 "Search for [topic]" → Google search
-"Hi" / "Hello"       → Friendly greeting
+"Show latest news"   → Headlines
 ```
 
 </td>
@@ -180,6 +180,7 @@ AURA communicates through mesmerizing visual states:
 │   ✨ ACTIVATED  →  Wake word detected, chime plays          │
 │   🔵 LISTENING  →  Orb pulses green, capturing command      │
 │   💬 RESPONDING →  AI response appears under the orb        │
+│   🎲 MORPHING   →  Orb transforms into Dice, Logos, etc.    │
 │   🔊 SPEAKING   →  Voice synthesis delivers response        │
 │                                                             │
 ╰─────────────────────────────────────────────────────────────╯
