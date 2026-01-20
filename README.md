@@ -6,7 +6,7 @@
 <br/>
  
 <!-- Typing Animation -->
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&duration=3000&pause=1000&color=D4AF37&center=true&vCenter=true&random=false&width=600&lines=Your+Intelligent+Voice+Companion;Say+Hey+Aura+to+Wake+Me+Up;Calculate+Math+%26+Set+Timers;Flip+Coins+%26+Roll+Dice;Open+Spotify+Netflix+%26+More" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&duration=3000&pause=1000&color=D4AF37&center=true&vCenter=true&random=false&width=600&lines=Your+Intelligent+Voice+Companion;Say+Hey+Aura+to+Wake+Me+Up;Change+Themes+to+Cyberpunk;Take+Notes+with+Voice;Visualizer+for+Your+Music" alt="Typing SVG" />
 
 <br/><br/>
 
@@ -156,6 +156,30 @@ npx http-server . -p 3000 -o
 - 🪟 Glassmorphism effects
 - 💫 Smooth animations
 - 🔔 Activation chime sound
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🎨 **Themes & Visuals**
+```
+"Change theme to Cyberpunk"
+"Set color to Ocean / Matrix"
+"Start / Stop Visualizer"
+"Set theme to Midnight"
+```
+
+</td>
+<td width="50%">
+
+### 📝 **Productivity**
+```
+"Take a note: [text]"
+"Delete note" / "Clear all"
+"Set timer for [time]"
+"Calculate [expression]"
+```
 
 </td>
 </tr>
