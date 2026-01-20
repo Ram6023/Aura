@@ -2157,24 +2157,89 @@
         function getEnhancedResponse(cmd, confidence) {
             // Command patterns with fuzzy matching support
             const commands = [
+                // === SYSTEM & STATUS ===
                 {
-                    patterns: ['time', 'what time', 'current time', 'tell me the time'],
+                    patterns: ['time', 'what time', 'current time', 'tell me the time', 'clock'],
                     response: () => `The current time is ${new Date().toLocaleTimeString()}.`
                 },
                 {
-                    patterns: ['date', 'what date', 'today', 'what day', 'which day'],
+                    patterns: ['date', 'what date', 'today', 'what day', 'which day', 'calendar'],
                     response: () => `Today is ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}.`
                 },
                 {
-                    patterns: ['weather', 'temperature', 'how hot', 'how cold', 'climate'],
+                    patterns: ['weather', 'temperature', 'how hot', 'how cold', 'climate', 'forecast'],
                     response: () => `The current temperature is ${document.getElementById('weatherTemp').textContent}°C with ${document.getElementById('weatherDesc').textContent.toLowerCase()} conditions. Humidity is at ${document.getElementById('weatherHumidity').textContent}.`
                 },
                 {
-                    patterns: ['battery', 'power', 'charge', 'battery level'],
+                    patterns: ['battery', 'power', 'charge', 'battery level', 'energy'],
                     response: () => `Your battery is at ${document.getElementById('batteryPercent').textContent}%. ${document.getElementById('batteryStatus').textContent.includes('Charging') ? 'Currently charging.' : ''}`
                 },
                 {
-                    patterns: ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'],
+                    patterns: ['cpu', 'processor', 'cpu usage', 'performance'],
+                    response: () => `Current CPU usage is at ${document.getElementById('cpuPercent').textContent}%.`
+                },
+                {
+                    patterns: ['memory', 'ram', 'memory usage', 'storage'],
+                    response: () => `Memory usage is at ${document.getElementById('memPercent').textContent}. You're using ${document.getElementById('memUsed').textContent} out of ${document.getElementById('memTotal').textContent}.`
+                },
+                {
+                    patterns: ['network', 'internet', 'connection', 'wifi', 'speed'],
+                    response: () => `You're connected via ${document.getElementById('networkType').textContent} with an estimated speed of ${document.getElementById('networkSpeed').textContent}.`
+                },
+
+                // === UTILITIES ===
+                {
+                    patterns: ['calculate', 'solve', 'math', 'plus', 'minus', 'times', 'divide', 'multiply'],
+                    response: () => {
+                        try {
+                            // Extract numbers and operators
+                            const expression = cmd.replace(/[^0-9+\-*/().]/g, '');
+                            if (!expression) return "Please provide a math problem, for example: 'calculate 5 plus 3'.";
+                            // Safe evaluation for basic math
+                            const result = Function('"use strict";return (' + expression + ')')();
+                            return `The answer is ${result}.`;
+                        } catch {
+                            return "I couldn't calculate that. Please say something like 'calculate 10 times 5'.";
+                        }
+                    }
+                },
+                {
+                    patterns: ['timer', 'set timer', 'countdown', 'alarm'],
+                    response: () => {
+                        const match = cmd.match(/(\d+)\s*(second|minute|hour)/i);
+                        if (match) {
+                            const amount = parseInt(match[1]);
+                            const unit = match[2].toLowerCase();
+                            let ms = amount * 1000;
+                            if (unit.startsWith('minute')) ms *= 60;
+                            if (unit.startsWith('hour')) ms *= 3600;
+
+                            setTimeout(() => {
+                                playActivationSound();
+                                speak(`Time is up! Your ${amount} ${unit} timer has finished.`);
+                                showResponse(`⏰ Timer finished! (${amount} ${unit})`);
+                            }, ms);
+
+                            return `Setting a timer for ${amount} ${unit}s.`;
+                        }
+                        return "Please specify the duration, for example: 'set timer for 10 seconds'.";
+                    }
+                },
+                {
+                    patterns: ['flip coin', 'toss coin', 'heads or tails', 'flip a coin'],
+                    response: () => {
+                        const result = Math.random() < 0.5 ? "Heads" : "Tails";
+                        return `I flipped a coin and it landed on ${result}!`;
+                    }
+                },
+                {
+                    patterns: ['roll dice', 'roll a die', 'dice roll', 'random number'],
+                    response: () => `You rolled a ${Math.floor(Math.random() * 6) + 1}.`
+                },
+
+                // === CONVERSATION ===
+                {
+                    patterns: ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening', 'yo'],
                     response: () => {
                         const hour = new Date().getHours();
                         const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -2182,72 +2247,108 @@
                     }
                 },
                 {
-                    patterns: ['how are you', 'how do you feel', 'how are things', 'how you doing'],
-                    response: () => "I'm functioning optimally, thank you for asking! All my systems are running smoothly and I'm ready to help with anything you need."
+                    patterns: ['how are you', 'how do you feel', 'status report', 'system status'],
+                    response: () => "I'm functioning optimally, thank you! All systems are green and I'm ready to help."
                 },
                 {
-                    patterns: ['joke', 'funny', 'make me laugh', 'tell me something funny'],
+                    patterns: ['joke', 'funny', 'make me laugh', 'tell me a joke'],
                     response: () => {
                         const jokes = [
                             'Why do programmers prefer dark mode? Because light attracts bugs! 😄',
                             'Why did the AI go to therapy? It had too many deep issues! 🤖',
                             'What do you call a computer that sings? A-Dell! 🎤',
                             'Why was the JavaScript developer sad? Because he didn\'t Node how to Express himself! 💻',
-                            'I told my computer I needed a break. Now it won\'t stop sending me Kit-Kat ads. 🍫'
+                            'I told my computer I needed a break. Now it won\'t stop sending me Kit-Kat ads. 🍫',
+                            'What is a computer\'s favorite snack? Microchips! 🍪'
                         ];
                         return jokes[Math.floor(Math.random() * jokes.length)];
                     }
                 },
                 {
-                    patterns: ['thank', 'thanks', 'thank you', 'appreciate'],
-                    response: () => "You're most welcome! It's my pleasure to assist you. Is there anything else I can help you with?"
+                    patterns: ['thank', 'thanks', 'appreciate', 'good job'],
+                    response: () => "You're most welcome! It's my pleasure to serve you."
                 },
                 {
-                    patterns: ['cpu', 'processor', 'cpu usage'],
-                    response: () => `Current CPU usage is at ${document.getElementById('cpuPercent').textContent}%.`
+                    patterns: ['who are you', 'what are you', 'your name', 'identify yourself'],
+                    response: () => "I'm AURA, your Advanced User Responsive AI assistant. I'm here to help you with tasks, information, and system monitoring."
                 },
                 {
-                    patterns: ['memory', 'ram', 'memory usage'],
-                    response: () => `Memory usage is at ${document.getElementById('memPercent').textContent}. You're using ${document.getElementById('memUsed').textContent} out of ${document.getElementById('memTotal').textContent}.`
+                    patterns: ['what can you do', 'help', 'commands', 'features', 'guide'],
+                    response: () => "I can check time/weather, monitor system stats, open websites, calculate math, set timers, flip coins, tell jokes, and more! Just ask."
                 },
                 {
-                    patterns: ['network', 'internet', 'connection', 'wifi'],
-                    response: () => `You're connected via ${document.getElementById('networkType').textContent} with an estimated speed of ${document.getElementById('networkSpeed').textContent}.`
+                    patterns: ['goodbye', 'bye', 'see you', 'exit', 'quit', 'shutdown'],
+                    response: () => {
+                        const hour = new Date().getHours();
+                        return hour >= 20 || hour < 6 ? 'Good night! Sweet dreams.' : 'Goodbye! Have a productive day.';
+                    }
                 },
+
+                // === APPS & WEBSITES ===
                 {
-                    patterns: ['open youtube', 'youtube', 'play youtube'],
+                    patterns: ['open youtube', 'youtube', 'watch video'],
                     response: () => 'Opening YouTube for you.',
                     action: () => window.open('https://youtube.com', '_blank')
                 },
                 {
-                    patterns: ['open google', 'google', 'go to google'],
+                    patterns: ['open google', 'google', 'search engine'],
                     response: () => 'Opening Google Search.',
                     action: () => window.open('https://google.com', '_blank')
                 },
                 {
-                    patterns: ['open gmail', 'gmail', 'email', 'check email', 'mail'],
-                    response: () => 'Opening Gmail for you.',
+                    patterns: ['open gmail', 'gmail', 'check email', 'mail', 'inbox'],
+                    response: () => 'Opening Gmail.',
                     action: () => window.open('https://mail.google.com', '_blank')
                 },
                 {
-                    patterns: ['open maps', 'maps', 'google maps', 'navigation'],
+                    patterns: ['open maps', 'maps', 'google maps', 'navigation', 'location'],
                     response: () => 'Opening Google Maps.',
                     action: () => window.open('https://maps.google.com', '_blank')
                 },
                 {
-                    patterns: ['who are you', 'what are you', 'your name', 'introduce yourself'],
-                    response: () => "I'm AURA, your Advanced User Responsive AI assistant. I'm designed to help you with voice commands, system monitoring, and quick access to various services. Just say 'Hey Aura' anytime you need me!"
+                    patterns: ['open spotify', 'spotify', 'play music', 'music'],
+                    response: () => 'Opening Spotify.',
+                    action: () => window.open('https://open.spotify.com', '_blank')
                 },
                 {
-                    patterns: ['what can you do', 'help', 'capabilities', 'features'],
-                    response: () => "I can tell you the time and date, check weather, monitor your battery and system stats, open websites like YouTube, Google, and Gmail, search the web, tell jokes, and much more! Just ask me anything."
+                    patterns: ['open netflix', 'netflix', 'movies'],
+                    response: () => 'Opening Netflix.',
+                    action: () => window.open('https://netflix.com', '_blank')
                 },
                 {
-                    patterns: ['goodbye', 'bye', 'see you', 'later', 'good night'],
-                    response: () => {
-                        const hour = new Date().getHours();
-                        return hour >= 20 || hour < 6 ? 'Good night! Sweet dreams. I\'ll be here whenever you need me.' : 'Goodbye for now! Have a wonderful day. Just say "Hey Aura" when you need me again.';
-                    }
+                    patterns: ['open github', 'github', 'code', 'repository'],
+                    response: () => 'Opening GitHub.',
+                    action: () => window.open('https://github.com', '_blank')
+                },
+                {
+                    patterns: ['open whatsapp', 'whatsapp', 'chat'],
+                    response: () => 'Opening WhatsApp Web.',
+                    action: () => window.open('https://web.whatsapp.com', '_blank')
+                },
+                {
+                    patterns: ['open instagram', 'instagram', 'insta'],
+                    response: () => 'Opening Instagram.',
+                    action: () => window.open('https://instagram.com', '_blank')
+                },
+                {
+                    patterns: ['open twitter', 'twitter', 'x.com', 'open x'],
+                    response: () => 'Opening X (Twitter).',
+                    action: () => window.open('https://x.com', '_blank')
+                },
+                {
+                    patterns: ['open linkedin', 'linkedin', 'jobs'],
+                    response: () => 'Opening LinkedIn.',
+                    action: () => window.open('https://linkedin.com', '_blank')
+                },
+                {
+                    patterns: ['news', 'latest news', 'headlines', 'read news'],
+                    response: () => 'Here are the latest news headlines.',
+                    action: () => window.open('https://news.google.com', '_blank')
+                },
+                {
+                    patterns: ['wikipedia', 'wiki', 'encyclopedia'],
+                    response: () => 'Opening Wikipedia.',
+                    action: () => window.open('https://wikipedia.org', '_blank')
                 }
             ];
 
