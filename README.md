@@ -35,6 +35,10 @@
 
 <br/>
 
+<img src="screenshot.png" alt="AURA Dashboard Screenshot" width="100%" />
+
+<br/>
+
 <div align="center">
 
 | 🎯 **Wake Word** | 🔮 **Premium UI** | 📊 **System Monitor** | 🔊 **Voice Response** |
