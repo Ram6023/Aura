@@ -1,0 +1,13 @@
+{
+  "name": "aura",
+  "version": "1.0.0",
+  "description": "AURA - Advanced User Responsive AI Assistant",
+  "scripts": {
+    "dev": "npx http-server . -p 3000 -c-1",
+    "start": "npx http-server . -p 3000",
+    "tunnel": "npx localtunnel --port 3000"
+  },
+  "keywords": ["ai", "assistant", "voice", "jarvis", "aura"],
+  "author": "Ram6023",
+  "license": "MIT"
+}
