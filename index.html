@@ -1287,6 +1287,80 @@
             animation: none !important;
             transition: transform 0.05s ease-out, box-shadow 0.05s ease-out !important;
         }
+
+        /* Notes Widget */
+        .notes-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .note-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 2px solid var(--gold);
+        }
+
+        .empty-notes {
+            color: var(--text-dim);
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .delete-note {
+            cursor: pointer;
+            color: var(--coral);
+            margin-left: 8px;
+            opacity: 0.7;
+        }
+
+        .delete-note:hover {
+            opacity: 1;
+        }
+
+        /* Theme Overrides */
+        body.theme-cyberpunk {
+            --gold: #fcee0a;
+            --rose-gold: #00f0ff;
+            --purple: #ff003c;
+            --bg-dark: #050510;
+        }
+
+        body.theme-ocean {
+            --gold: #00d2ff;
+            --rose-gold: #3a7bd5;
+            --purple: #0066cc;
+            --bg-dark: #001e36;
+        }
+
+        body.theme-matrix {
+            --gold: #00ff00;
+            --rose-gold: #003300;
+            --purple: #00cc00;
+            --bg-dark: #000;
+            font-family: 'Courier New', monospace;
+        }
+
+        body.theme-crimson {
+            --gold: #ff0000;
+            --rose-gold: #990000;
+            --purple: #cc0000;
+            --bg-dark: #1a0000;
+        }
+
+        body.theme-midnight {
+            --gold: #7c4dff;
+            --rose-gold: #b388ff;
+            --purple: #651fff;
+            --bg-dark: #0a001a;
+        }
     </style>
 </head>
 
@@ -1382,6 +1456,14 @@
                     style="display:flex;justify-content:space-around;margin-top:8px;font-size:10px;color:var(--text-dim);">
                     <span>↓ <span id="downloadSpeed">0</span> Mbps</span>
                     <span>↑ <span id="uploadSpeed">0</span> Mbps</span>
+                </div>
+            </div>
+
+            <!-- Notes Widget -->
+            <div class="widget">
+                <div class="widget-title"><span class="widget-icon">📝</span> Notes</div>
+                <div id="notesList" class="notes-list">
+                    <div class="empty-notes">No notes yet.</div>
                 </div>
             </div>
         </aside>
@@ -1544,6 +1626,7 @@
             initNetwork();
             initWeather();
             initUptime();
+            initNotes();
             initSpeech();
 
             addChat('ai', 'Hello! I am AURA, your premium AI assistant. How may I help you today?');
@@ -2505,6 +2588,57 @@
             speak("Visualizer stopped.");
         }
 
+        // ========================================
+        // NOTES & THEMES
+        // ========================================
+
+        function initNotes() {
+            renderNotes();
+            // Restore Theme
+            const savedTheme = localStorage.getItem('aura_theme');
+            if (savedTheme) document.body.className = `theme-${savedTheme}`;
+        }
+
+        function getNotes() {
+            return JSON.parse(localStorage.getItem('aura_notes') || '[]');
+        }
+
+        function addNote(text) {
+            const notes = getNotes();
+            notes.push({ id: Date.now(), text });
+            localStorage.setItem('aura_notes', JSON.stringify(notes));
+            renderNotes();
+            speak('Note added.');
+        }
+
+        function deleteNote(id) {
+            const notes = getNotes().filter(n => n.id !== id);
+            localStorage.setItem('aura_notes', JSON.stringify(notes));
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('notesList');
+            const notes = getNotes();
+            if (notes.length === 0) {
+                list.innerHTML = '<div class="empty-notes">No notes yet.</div>';
+                return;
+            }
+            list.innerHTML = notes.map(n => `
+                <div class="note-item">
+                    <span>${n.text}</span>
+                    <span class="delete-note" onclick="deleteNote(${n.id})">×</span>
+                </div>
+            `).join('');
+        }
+
+        function setTheme(theme) {
+            document.body.className = theme === 'default' ? '' : `theme-${theme}`;
+            localStorage.setItem('aura_theme', theme);
+            const themeNames = { cyberpunk: 'Cyberpunk', ocean: 'Ocean Blue', matrix: 'The Matrix', crimson: 'Crimson Red', midnight: 'Midnight Purple' };
+            speak(`Theme changed to ${themeNames[theme] || 'Default'}.`);
+        }
+
         // Enhanced response system with fuzzy matching
         function getEnhancedResponse(cmd, confidence) {
             // Command patterns with fuzzy matching support
@@ -2519,6 +2653,43 @@
                     patterns: ['stop visualizer', 'end visualizer', 'stop dancing'],
                     response: () => "Stopping visualizer.",
                     action: () => stopVisualizer()
+                },
+                // === NOTES ===
+                {
+                    patterns: ['take a note', 'add note', 'write down', 'remind me to', 'note'],
+                    response: () => "I've saved that note for you.",
+                    action: () => {
+                        const text = cmd.replace(/take a note|add note|write down|remind me to|note|that/gi, '').trim();
+                        if (text) {
+                            addNote(text);
+                            return "Note saved.";
+                        }
+                        else return "What should I write?";
+                    }
+                },
+                {
+                    patterns: ['delete note', 'remove note', 'clear notes'],
+                    response: () => "To delete a note, click the X icon next to it.",
+                    action: () => {
+                        if (cmd.includes('all')) {
+                            localStorage.setItem('aura_notes', '[]');
+                            renderNotes();
+                            speak("All notes cleared.");
+                        }
+                    }
+                },
+                // === THEMES ===
+                {
+                    patterns: ['change theme', 'set theme', 'change color', 'color mode'],
+                    response: () => "Changing theme...",
+                    action: () => {
+                        if (cmd.includes('cyberpunk')) setTheme('cyberpunk');
+                        else if (cmd.includes('ocean') || cmd.includes('blue')) setTheme('ocean');
+                        else if (cmd.includes('matrix') || cmd.includes('green')) setTheme('matrix');
+                        else if (cmd.includes('crimson') || cmd.includes('red')) setTheme('crimson');
+                        else if (cmd.includes('midnight') || cmd.includes('purple')) setTheme('midnight');
+                        else setTheme('default');
+                    }
                 },
                 {
                     patterns: ['time', 'what time', 'current time', 'tell me the time', 'clock'],
