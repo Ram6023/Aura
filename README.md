@@ -2,7 +2,7 @@
 
 <!-- Animated Gradient Header -->
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=24,25,26&height=200&section=header&text=AURA&fontSize=80&fontColor=fff&animation=twinkling&fontAlignY=35&desc=Advanced%20User%20Responsive%20AI&descAlignY=55&descSize=20" />
- 
+  
 <br/>
  
 <!-- Typing Animation -->
